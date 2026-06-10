@@ -1035,7 +1035,7 @@ buildCal();buildAgenda('60');buildWhatsNext();buildDir('');buildBacklog();buildH
 </style>
 
 <!-- FAB Button -->
-<button class="agent-fab" onclick="toggleAgent()" title="Duck Agent — tu asistente Central">
+<button class="agent-fab" onclick="toggleAgent()" title="Duffy — DA Central assistant">
   🦆
   <span class="notif-dot" id="agent-notif"></span>
 </button>
@@ -1045,7 +1045,7 @@ buildCal();buildAgenda('60');buildWhatsNext();buildDir('');buildBacklog();buildH
   <div class="agent-head">
     <div class="agent-av">🦆</div>
     <div>
-      <div class="agent-name">Duck Agent</div>
+      <div class="agent-name">Duffy</div>
       <div class="agent-status"><span class="agent-status-dot"></span>Online · Connected to hub data</div>
     </div>
     <button class="agent-close" onclick="toggleAgent()">×</button>
@@ -1065,7 +1065,7 @@ buildCal();buildAgenda('60');buildWhatsNext();buildDir('');buildBacklog();buildH
       <div class="msg-av">🦆</div>
       <div>
         <div class="msg-bubble">
-          Hi there 👋 I'm <strong>Duck Agent</strong> — your assistant embedded in the Central Teams Hub.<br><br>
+          Hi there 👋 I'm <strong>Duffy</strong> — your DA Central assistant embedded in the Central Teams Hub.<br><br>
           I can help you:<br>
           🔍 <strong>Search</strong> anything in the hub<br>
           💬 <strong>Draft</strong> Slack messages with live hub data<br>
@@ -1193,7 +1193,7 @@ function agentThink(q){
       greens.map(function(b){return '• '+b.name;}).join('\n')+
       '\n\n*⏰ Due this week:*\n'+
       (dueItems.length?dueItems.map(function(b){return '• '+b.name+' — '+b.due;}).join('\n'):'None this week')+
-      '\n\n_Sent automatically by Duck Agent · DA Central Teams Hub_';
+      '\n\n_Sent automatically by Duffy · DA Central Teams Hub_';
     return {
       text:'Here is the Slack update draft with live data from the hub. Review and confirm before sending:',
       card:'<div class="agent-slack-preview"><div class="sp-header">#central-updates</div>'+slackText.replace(/\n/g,'<br>')+'</div>',
@@ -1412,7 +1412,7 @@ function agentThink(q){
 
 function agentClaudeCall(q){
   // Build context from hub data
-  var context='You are Duck Agent, the embedded AI assistant for the DA Central Teams Hub. You have access to the following live hub data:\n\n';
+  var context='You are Duffy, the embedded AI assistant for the DA Central Teams Hub. You have access to the following live hub data:\n\n';
   context+='TEAM PRIORITIES (Brown Paper — '+priorities.length+' items):\n';
   priorities.forEach(function(p){context+=p.team+': '+p.title+' | Status: '+p.status+' | Owner: '+(p.owner||'TBC')+' | Due: '+(p.due||'—')+'\n';});
   context+='\nCENTRAL BACKLOG ('+backlog.length+' items):\n';
