@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DA Central Teams Hub v3</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f5f7;color:#1a1d2e;font-size:13px;}
+:root{--accent:#6c63ff;--white:#fff;--surface:#f4f5f7;--border:#e2e4e9;--text:#1a1d2e;--muted:#6b7280;--faint:#9ca3af;}
+.app{display:flex;height:100vh;overflow:hidden;}
+.nav{width:200px;background:#1a1d2e;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.nav-logo{padding:16px 18px 12px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.nav-logo-title{font-size:13px;font-weight:700;color:#fff;}
+.nav-logo-sub{font-size:10px;color:rgba(255,255,255,0.3);margin-top:3px;}
+.nav-item{padding:9px 18px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;}
+.nav-item:hover{background:rgba(255,255,255,0.06);}
+.nav-item.active{background:rgba(108,99,255,0.2);border-left-color:var(--accent);}
+.nav-main{font-size:12px;font-weight:600;color:rgba(255,255,255,0.85);}
+.nav-sub{font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px;}
+.nav-item.active .nav-main{color:#fff;}
+.nav-sec{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,0.2);padding:12px 18px 4px;}
+.main{flex:1;overflow-y:auto;background:var(--surface);}
+.page{display:none;}
+.page.active{display:block;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+.tb-title{font-size:16px;font-weight:700;color:var(--text);}
+.tb-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.btn{padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text);transition:all .15s;}
+.btn:hover{background:var(--surface);}
+.btn-acc{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-acc:hover{background:#7c73ff;}
+.btn-sm{padding:5px 12px;font-size:11px;}
+.btn-slack{background:rgba(74,144,226,.1);color:#1264a3;border-color:rgba(74,144,226,.25);font-size:11px;padding:5px 12px;}
+.page-body{padding:24px;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+.card-head{font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.card-link{font-size:11px;color:var(--accent);cursor:pointer;font-weight:600;}
+.card-link:hover{text-decoration:underline;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+
+/* CONCEPT BANNER */
+.concept-banner{background:linear-gradient(135deg,rgba(108,99,255,.08),rgba(108,99,255,.03));border:1px solid rgba(108,99,255,.2);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;gap:16px;align-items:flex-start;}
+.cb-icon{font-size:28px;flex-shrink:0;}
+.cb-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+.cb-desc{font-size:11px;color:var(--muted);line-height:1.7;}
+.cb-arrow{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:11px;font-weight:600;}
+.cb-pill{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+
+/* TEAM SECTION HEADERS */
+.team-section{margin-bottom:20px;}
+.team-section-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;margin-bottom:8px;cursor:pointer;}
+.team-section-head:hover{opacity:.9;}
+.ts-badge{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;}
+.ts-name{font-size:13px;font-weight:700;color:var(--text);}
+.ts-count{font-size:11px;color:var(--muted);margin-left:auto;}
+.ts-expand{font-size:12px;color:var(--muted);}
+
+/* PRIORITY CARDS */
+.priority-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:12px;}
+.priority-card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(108,99,255,.1);}
+.pc-left{flex:1;}
+.pc-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px;line-height:1.4;}
+.pc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+.pc-meta{display:flex;align-items:center;gap:10px;font-size:10px;color:var(--muted);}
+.pc-right{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.status-pill{font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;white-space:nowrap;}
+.owner-chip-sm{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--surface);border:1px solid var(--border);color:var(--muted);white-space:nowrap;}
+.has-backlog-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:rgba(108,99,255,.1);color:var(--accent);cursor:pointer;}
+
+/* TAGS */
+.tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;}
+.tag-g{background:rgba(99,153,34,.12);color:#3B6D11;}
+.tag-a{background:rgba(239,159,39,.12);color:#854F0B;}
+.tag-r{background:rgba(226,75,74,.12);color:#A32D2D;}
+.tag-b{background:rgba(108,99,255,.12);color:var(--accent);}
+.tag-gray{background:var(--surface);color:var(--muted);}
+.tag-p1{background:rgba(226,75,74,.1);color:#A32D2D;}
+.tag-p2{background:rgba(239,159,39,.1);color:#854F0B;}
+.tag-p3{background:var(--surface);color:var(--muted);}
+
+/* FILTERS */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+.fchip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1.5px solid;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;}
+.tchip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:var(--white);color:var(--muted);}
+.tchip.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* BACKLOG TABLE */
+.btable{width:100%;border-collapse:collapse;}
+.btable th{text-align:left;padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border);background:var(--surface);}
+.btable td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.btable tr:last-child td{border-bottom:none;}
+.btable tr:hover td{background:rgba(108,99,255,.02);cursor:pointer;}
+.rag-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.rag-r{background:#E24B4A;}.rag-a{background:#EF9F27;}.rag-g{background:#639922;}
+.ibar{height:5px;border-radius:3px;background:#e9ecef;overflow:hidden;min-width:60px;}
+.ibar-fill{height:100%;border-radius:3px;}
+.rag-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+.rag-box{border-radius:10px;padding:12px 16px;text-align:center;}
+.rag-num{font-size:22px;font-weight:800;}
+.rag-lbl{font-size:10px;font-weight:700;margin-top:3px;}
+
+/* DETAIL PANEL */
+.detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;}
+.detail-overlay.open{display:block;}
+.detail-panel{position:fixed;right:0;top:0;bottom:0;width:500px;background:var(--white);z-index:201;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,.12);transform:translateX(100%);transition:transform .25s ease;}
+.detail-panel.open{transform:translateX(0);}
+.dp-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;}
+.dp-close{cursor:pointer;font-size:22px;color:var(--muted);background:none;border:none;margin-left:auto;padding:0 4px;border-radius:6px;line-height:1;}
+.dp-close:hover{background:var(--surface);}
+.dp-body{flex:1;overflow-y:auto;padding:20px;}
+.dp-sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:8px;margin-top:18px;}
+.dp-sec-title:first-child{margin-top:0;}
+.dp-label{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;display:block;margin-top:12px;}
+.dp-input{width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);font-size:13px;color:var(--text);outline:none;font-family:inherit;}
+.dp-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,.1);}
+.dp-select{width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);font-size:13px;color:var(--text);font-family:inherit;}
+.dp-textarea{width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);font-size:13px;color:var(--text);outline:none;font-family:inherit;resize:vertical;min-height:80px;}
+.dp-textarea:focus{border-color:var(--accent);}
+.dp-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.comment-item{display:flex;gap:10px;margin-bottom:12px;}
+.comment-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.comment-author{font-size:12px;font-weight:700;color:var(--text);}
+.comment-time{font-size:10px;color:var(--faint);margin-left:6px;}
+.comment-text{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;}
+.comment-row{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);align-items:flex-end;}
+.comment-input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);font-size:12px;color:var(--text);outline:none;font-family:inherit;resize:none;min-height:40px;}
+.comment-input:focus{border-color:var(--accent);}
+.backlog-link-card{background:rgba(108,99,255,.05);border:1px solid rgba(108,99,255,.15);border-radius:8px;padding:10px 12px;margin-top:8px;cursor:pointer;transition:all .15s;}
+.backlog-link-card:hover{background:rgba(108,99,255,.1);}
+.blc-title{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:3px;}
+.blc-meta{font-size:11px;color:var(--muted);}
+.tbar{height:8px;border-radius:4px;background:#e9ecef;overflow:hidden;}
+.tbar-fill{height:100%;border-radius:4px;background:var(--accent);}
+
+/* KANBAN (backlog) */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.kcol{background:var(--surface);border-radius:10px;padding:12px;}
+.kcol-head{display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:11px;font-weight:700;color:var(--muted);}
+.col-dot{width:8px;height:8px;border-radius:50%;}
+.col-cnt{margin-left:auto;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1px 8px;font-size:10px;font-weight:700;}
+.kcard{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s;}
+.kcard:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(108,99,255,.1);transform:translateY(-1px);}
+.kcard-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4;}
+.kcard-meta{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);flex-wrap:wrap;}
+
+/* AUTOMATIONS */
+.auto-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
+.auto-icon{width:36px;height:36px;border-radius:8px;background:rgba(108,99,255,.08);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.auto-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.auto-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.toggle-track{position:relative;width:36px;height:20px;background:#e9ecef;border-radius:10px;cursor:pointer;transition:background .2s;display:inline-block;flex-shrink:0;}
+.toggle-track.on{background:var(--accent);}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.toggle-track.on .toggle-thumb{transform:translateX(16px);}
+
+/* AGENDA */
+.agenda-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.atab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid var(--border);cursor:pointer;background:var(--white);color:var(--muted);transition:all .15s;}
+.atab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.atab:hover:not(.active){background:var(--surface);}
+.agenda-row{display:grid;grid-template-columns:70px 1fr 120px;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:start;}
+.agenda-row:last-child{border-bottom:none;}
+.atime{font-size:11px;font-weight:700;color:var(--muted);padding-top:2px;}
+.aname{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.adetail{font-size:11px;color:var(--muted);line-height:1.5;}
+.owner-chip{font-size:10px;font-weight:600;padding:3px 10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);text-align:center;}
+.async-note{background:#fffbeb;border:1px solid #f59e0b55;border-radius:10px;padding:12px 16px;font-size:11px;color:#854F0B;margin-bottom:14px;line-height:1.6;}
+.next-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
+.next-date-box{flex-shrink:0;width:46px;text-align:center;background:rgba(108,99,255,.08);border-radius:8px;padding:6px 4px;}
+.next-day{font-size:18px;font-weight:800;color:var(--accent);}
+.next-mon{font-size:9px;font-weight:700;color:var(--accent);text-transform:uppercase;}
+.next-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.next-detail{font-size:11px;color:var(--muted);line-height:1.5;}
+
+/* DIRECTORY */
+.dir-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.dir-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s;position:relative;}
+.dir-card:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(108,99,255,.1);}
+.dir-top{height:4px;margin:-16px -16px 14px;border-radius:4px 4px 0 0;}
+.dir-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;margin-bottom:10px;}
+.dir-name{font-size:13px;font-weight:700;color:var(--text);}
+.dir-role{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.dir-pill{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;margin-top:8px;}
+.dir-tz{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.dir-actions{display:flex;gap:6px;margin-top:10px;}
+.dir-btn{flex:1;text-align:center;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:1px solid var(--border);cursor:pointer;color:var(--muted);background:var(--white);transition:all .15s;}
+.dir-btn:hover{background:var(--surface);}
+.dir-incomplete{position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%;background:#EF9F27;}
+.dir-search{padding:8px 16px;border-radius:20px;border:1px solid var(--border);font-size:12px;background:var(--white);color:var(--text);width:240px;outline:none;}
+.dir-search:focus{border-color:var(--accent);}
+
+/* OOO */
+.cal-header{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;}
+.cal-nav{padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:14px;font-weight:700;background:var(--white);}
+.cal-nav:hover{background:var(--surface);}
+.cal-month{font-size:16px;font-weight:800;min-width:140px;text-align:center;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-dh{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:6px 0;}
+.cal-cell{min-height:70px;border-radius:8px;border:1px solid var(--border);background:var(--white);padding:6px;}
+.cal-cell.today{border-color:var(--accent);background:rgba(108,99,255,.04);}
+.cal-cell.ooo-cell{background:#fff5f5;border-color:#fca5a5;}
+.cal-cell.has-event{background:#f0f9ff;border-color:#93c5fd;}
+.cal-empty{background:transparent;border-color:transparent;}
+.cal-date{font-size:11px;font-weight:700;color:var(--muted);}
+.cal-cell.today .cal-date{color:var(--accent);}
+.cal-tag{font-size:9px;font-weight:700;border-radius:4px;padding:2px 5px;margin-top:3px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hibob-box{background:#e8f4fd;border:1px solid #93c5fd;border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;gap:12px;}
+.hibob-title{font-size:13px;font-weight:700;color:#1264a3;margin-bottom:4px;}
+.hibob-desc{font-size:11px;color:#1264a3;opacity:.85;line-height:1.6;}
+
+/* HOME */
+.day-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;align-items:center;}
+.day-pill{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;}
+.day-on{background:var(--accent);color:#fff;}
+.day-off{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
+.hmcard{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.hmcard-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;justify-content:space-between;}
+.hmcard-empty{font-size:11px;color:var(--faint);}
+.ql-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.ql-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--white);cursor:pointer;transition:all .15s;}
+.ql-item:hover{border-color:var(--accent);}
+.ql-item.pending{border-color:#f59e0b;background:#fffbeb;}
+.ql-icon{font-size:22px;}
+.ql-name{font-size:12px;font-weight:700;color:var(--text);}
+.ql-desc{font-size:10px;color:var(--muted);}
+
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;display:none;align-items:center;justify-content:center;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--white);border-radius:14px;width:480px;max-width:95vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.modal-title{font-size:15px;font-weight:700;color:var(--text);}
+.modal-close{cursor:pointer;font-size:22px;color:var(--muted);background:none;border:none;line-height:1;padding:0 6px;border-radius:6px;}
+.modal-close:hover{background:var(--surface);}
+.modal-body{padding:20px;overflow-y:auto;}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;}
+.mf-label{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;display:block;}
+.mf-field{margin-bottom:14px;}
+.mf-input,.mf-select,.mf-textarea{width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--white);font-size:13px;color:var(--text);outline:none;font-family:inherit;}
+.mf-input:focus,.mf-select:focus,.mf-textarea:focus{border-color:var(--accent);}
+.mf-textarea{resize:vertical;min-height:70px;}
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1d2e;color:#fff;padding:12px 18px;border-radius:10px;font-size:12px;font-weight:600;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,.3);}
+.toast.show{opacity:1;transform:translateY(0);}
+.empty-state{text-align:center;padding:40px 24px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo"><div class="nav-logo-title">DA Central Teams Hub</div><div class="nav-logo-sub">All Our Ducks in a Row</div></div>
+  <div class="nav-sec">Main</div>
+  <div class="nav-item active" onclick="go('home')"><div class="nav-main">Home</div><div class="nav-sub">Dashboard</div></div>
+  <div class="nav-item" onclick="go('board')"><div class="nav-main">My board</div><div class="nav-sub">Active tasks</div></div>
+  <div class="nav-sec">Brown Paper</div>
+  <div class="nav-item" onclick="go('priorities')"><div class="nav-main">Team priorities</div><div class="nav-sub">From brown paper · 8 teams</div></div>
+  <div class="nav-sec">Backlog</div>
+  <div class="nav-item" onclick="go('backlog')"><div class="nav-main">Central backlog</div><div class="nav-sub">Actions · RAG · Status</div></div>
+  <div class="nav-item" onclick="go('automations')"><div class="nav-main">Automations</div><div class="nav-sub">Reminders & alerts</div></div>
+  <div class="nav-sec">Routines</div>
+  <div class="nav-item" onclick="go('agenda')"><div class="nav-main">Monthly agenda</div><div class="nav-sub">What's next</div></div>
+  <div class="nav-sec">Team</div>
+  <div class="nav-item" onclick="go('directory')"><div class="nav-main">Team directory</div><div class="nav-sub">People & roles</div></div>
+  <div class="nav-item" onclick="go('ooo')"><div class="nav-main">OOO calendar</div><div class="nav-sub">HiBob · Who's away</div></div>
+</nav>
+
+<!-- MAIN -->
+<div class="main" id="main-scroll">
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <div class="topbar"><div><div class="tb-title">Good morning 👋</div><div class="tb-sub">Thursday, 4 June 2026 · DA Central Teams Hub</div></div>
+      <div class="topbar-right"><div style="display:flex;align-items:center;gap:10px;padding:8px 14px;background:rgba(108,99,255,.07);border-radius:10px;border:1px solid rgba(108,99,255,.2);">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(108,99,255,.15);display:flex;align-items:center;justify-content:justify-content;justify-content:center;font-size:12px;font-weight:800;color:var(--accent);">ME</div>
+        <div><div style="font-size:12px;font-weight:700;">Your Name</div><div style="font-size:10px;color:var(--muted);"><span style="color:var(--accent);cursor:pointer;" onclick="go('directory')">✏ Edit profile</span></div></div>
+      </div></div>
+    </div>
+    <div class="page-body">
+      <div class="concept-banner">
+        <div class="cb-icon">🦆</div>
+        <div>
+          <div class="cb-title">How this hub is structured</div>
+          <div class="cb-desc">The hub follows a two-layer model. The <strong>Team Priorities</strong> page reflects what each team brought to the retreat on their brown paper — the strategic intentions and focus areas for the year. The <strong>Central Backlog</strong> is the operational sub-product: the concrete actions, owners, deadlines, and RAG status that emerge from those priorities.</div>
+          <div class="cb-arrow">
+            <span class="cb-pill" style="background:rgba(108,99,255,.12);color:var(--accent);">🟣 Team priorities (brown paper) — the WHY</span>
+            <span style="font-size:16px;color:var(--muted);">→</span>
+            <span class="cb-pill" style="background:rgba(99,153,34,.1);color:#3B6D11;">🟢 Central backlog — the HOW and WHO</span>
+          </div>
+        </div>
+      </div>
+      <div class="grid3">
+        <div class="hmcard"><div class="hmcard-title">My active work <span class="card-link" onclick="go('board')">Board →</span></div><div id="home-tasks" class="hmcard-empty">No tasks yet.</div></div>
+        <div class="hmcard"><div class="hmcard-title">What's next <span class="card-link" onclick="go('agenda')">Agenda →</span></div><div id="home-next" class="hmcard-empty">Loading...</div></div>
+        <div class="hmcard"><div class="hmcard-title">🔴 Needs attention <span class="card-link" onclick="go('backlog')">Backlog →</span></div><div id="home-red" class="hmcard-empty">Loading...</div></div>
+      </div>
+      <div class="grid2">
+        <div class="hmcard"><div class="hmcard-title">OOO this week <span class="card-link" onclick="go('ooo')">Calendar →</span></div><div id="home-ooo">
+          <div style="font-size:11px;color:var(--muted);line-height:2;"><strong>Anna Needs</strong> — 15–19 Jun (Canberra)<br><strong>Abigail Smock</strong> — 22 Jun (LA)<br><span style="color:var(--faint);">Synced from HiBob</span></div>
+        </div></div>
+        <div class="hmcard"><div class="hmcard-title">Active automations <span class="card-link" onclick="go('automations')">Manage →</span></div><div style="font-size:11px;color:var(--muted);line-height:2;">⏰ 3-day deadline alert · enabled<br>📊 Monthly RAG summary · enabled<br>👤 Profile completion reminder · enabled</div></div>
+      </div>
+      <div class="card"><div class="card-head">Quick links</div>
+        <div class="ql-grid">
+          <div class="ql-item"><div class="ql-icon">🌐</div><div><div class="ql-name">DA Intranet</div><div class="ql-desc">Main intranet</div></div></div>
+          <div class="ql-item"><div class="ql-icon">👤</div><div><div class="ql-name">HiBob</div><div class="ql-desc">People & HR</div></div></div>
+          <div class="ql-item"><div class="ql-icon">📚</div><div><div class="ql-name">Guru</div><div class="ql-desc">Knowledge base</div></div></div>
+          <div class="ql-item pending"><div class="ql-icon">📊</div><div><div class="ql-name" style="color:#854F0B;">CMAP</div><div class="ql-desc">Add link</div></div></div>
+          <div class="ql-item pending"><div class="ql-icon">🌱</div><div><div class="ql-name" style="color:#854F0B;">Greenhouse</div><div class="ql-desc">Add link</div></div></div>
+          <div class="ql-item"><div class="ql-icon">💬</div><div><div class="ql-name">Slack</div><div class="ql-desc">Team comms</div></div></div>
+          <div class="ql-item"><div class="ql-icon">📧</div><div><div class="ql-name">Outlook</div><div class="ql-desc">Email & calendar</div></div></div>
+          <div class="ql-item pending"><div class="ql-icon">📁</div><div><div class="ql-name" style="color:#854F0B;">SharePoint</div><div class="ql-desc">Add link</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY BOARD -->
+  <div id="page-board" class="page">
+    <div class="topbar"><div><div class="tb-title">My board</div><div class="tb-sub" id="board-stat">0 tasks</div></div><div class="topbar-right"><button class="btn btn-acc" onclick="openModal('add-task')">+ Add task</button></div></div>
+    <div class="page-body">
+      <div class="kanban" id="my-kanban">
+        <div class="kcol"><div class="kcol-head"><div class="col-dot" style="background:#9ca3af;"></div>Backlog<span class="col-cnt" id="cnt-bl">0</span></div><div id="col-bl"></div><div id="emp-bl" style="font-size:11px;color:var(--faint);text-align:center;padding:12px;">Empty</div></div>
+        <div class="kcol"><div class="kcol-head"><div class="col-dot" style="background:var(--accent);"></div>This week<span class="col-cnt" id="cnt-wk">0</span></div><div id="col-wk"></div><div id="emp-wk" style="font-size:11px;color:var(--faint);text-align:center;padding:12px;">Empty</div></div>
+        <div class="kcol"><div class="kcol-head"><div class="col-dot" style="background:#EF9F27;"></div>In progress<span class="col-cnt" id="cnt-ip">0</span></div><div id="col-ip"></div><div id="emp-ip" style="font-size:11px;color:var(--faint);text-align:center;padding:12px;">Empty</div></div>
+        <div class="kcol"><div class="kcol-head"><div class="col-dot" style="background:#639922;"></div>Done<span class="col-cnt" id="cnt-dn">0</span></div><div id="col-dn"></div><div id="emp-dn" style="font-size:11px;color:var(--faint);text-align:center;padding:12px;">Empty</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM PRIORITIES (Brown Paper) -->
+  <div id="page-priorities" class="page">
+    <div class="topbar"><div><div class="tb-title">Team priorities — Brown paper</div><div class="tb-sub" id="prio-stat">8 teams · 20 strategic priorities · Source: Central Retreat 2025</div></div>
+      <div class="topbar-right"><button class="btn btn-sm" onclick="openModal('add-priority')">+ Add priority</button><button class="btn btn-slack btn-sm" onclick="toast('📨 Priorities digest sent to #central-updates!')">💬 Share to Slack</button></div>
+    </div>
+    <div class="page-body">
+      <div class="concept-banner" style="margin-bottom:16px;">
+        <div class="cb-icon">📋</div>
+        <div>
+          <div class="cb-title">Brown paper priorities — what each team is focused on this year</div>
+          <div class="cb-desc">These priorities were captured directly from each team's brown paper at the Central Retreat. They represent strategic intentions — not tasks. Click any priority to add status, owners, comments, or link it to a backlog action. Use the backlog (left nav) to track the operational delivery of these priorities.</div>
+        </div>
+      </div>
+      <div class="filter-row" id="prio-team-filters"></div>
+      <div class="filter-row" id="prio-type-filters"></div>
+      <div id="priorities-container"></div>
+    </div>
+  </div>
+
+  <!-- CENTRAL BACKLOG -->
+  <div id="page-backlog" class="page">
+    <div class="topbar"><div><div class="tb-title">Central backlog</div><div class="tb-sub">Operational sub-product of team priorities · Status · Responsible · RAG</div></div>
+      <div class="topbar-right"><button class="btn btn-slack btn-sm" onclick="toast('📨 RAG summary sent to #central-alerts!')">💬 RAG to Slack</button><button class="btn btn-acc" onclick="openModal('add-project')">+ Add action</button></div>
+    </div>
+    <div class="page-body">
+      <div class="concept-banner" style="margin-bottom:14px;padding:12px 16px;">
+        <div class="cb-icon" style="font-size:20px;">⚙️</div>
+        <div><div class="cb-title" style="font-size:12px;">The backlog tracks HOW priorities get delivered</div><div class="cb-desc" style="font-size:11px;">Each item links back to a team priority (brown paper). It shows the responsible person, RAG status, due date, and whether a decision is needed. Click any row to update status or add comments.</div></div>
+      </div>
+      <div class="rag-summary">
+        <div class="rag-box" style="background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.25);"><div class="rag-num" style="color:#A32D2D;" id="rag-r">2</div><div class="rag-lbl" style="color:#A32D2D;">🔴 Red — action needed</div></div>
+        <div class="rag-box" style="background:rgba(239,159,39,.08);border:1px solid rgba(239,159,39,.25);"><div class="rag-num" style="color:#854F0B;" id="rag-a">3</div><div class="rag-lbl" style="color:#854F0B;">🟡 Amber — at risk</div></div>
+        <div class="rag-box" style="background:rgba(99,153,34,.08);border:1px solid rgba(99,153,34,.25);"><div class="rag-num" style="color:#3B6D11;" id="rag-g">3</div><div class="rag-lbl" style="color:#3B6D11;">🟢 Green — on track</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="btable"><thead><tr><th style="width:16px;"></th><th>Action / project</th><th>Linked priority</th><th>Status</th><th>Responsible</th><th>Due date</th><th>RAG</th><th>Decision?</th><th>Slack</th></tr></thead><tbody id="backlog-body"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTOMATIONS -->
+  <div id="page-automations" class="page">
+    <div class="topbar"><div><div class="tb-title">Automations & reminders</div><div class="tb-sub">Deadline alerts · Status change notifications · Slack triggers</div></div><div class="topbar-right"><button class="btn btn-acc" onclick="openModal('add-automation')">+ Add automation</button></div></div>
+    <div class="page-body">
+      <div class="card"><div class="card-head">How automations connect to Slack</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.9;">Each automation watches priorities and backlog items. When a trigger fires, it sends a Slack notification to the configured channel or person. <strong>To connect to real Slack:</strong> your IT team needs to create a Slack App with a Webhook URL and add it to this tool's configuration. Until then, all notifications are simulated in this prototype.</div>
+      </div>
+      <div id="automations-list"></div>
+    </div>
+  </div>
+
+  <!-- AGENDA -->
+  <div id="page-agenda" class="page">
+    <div class="topbar"><div><div class="tb-title">Monthly agenda + What's next</div><div class="tb-sub">Central Team Routine</div></div>
+      <div class="topbar-right"><button class="btn btn-slack btn-sm" onclick="toast('📨 Agenda sent to #central-updates!')">💬 Send to Slack</button></div>
+    </div>
+    <div class="page-body">
+      <div class="grid2">
+        <div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:12px;">📅 What's next</div>
+          <div id="whats-next-list"></div>
+        </div>
+        <div>
+          <div class="agenda-tabs">
+            <button class="atab active" onclick="switchAgenda('60',this)">60 min</button>
+            <button class="atab" onclick="switchAgenda('45',this)">45 min</button>
+            <button class="atab" onclick="switchAgenda('90',this)">90 min</button>
+          </div>
+          <div class="async-note">⏰ <strong>Async before meeting:</strong> RAG updates · Priority thread in Slack · Issues submitted — all 24h before.</div>
+          <div class="card" style="padding:0;overflow:hidden;" id="agenda-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIRECTORY -->
+  <div id="page-directory" class="page">
+    <div class="topbar"><div><div class="tb-title">Team directory</div><div class="tb-sub">Click any card to edit · Orange dot = profile incomplete</div></div>
+      <div class="topbar-right"><input class="dir-search" placeholder="Search name, role, team..." oninput="filterDir(this.value)" id="dir-search-input"><button class="btn btn-slack btn-sm" onclick="toast('📨 Slack DM sent to all incomplete profiles — please complete your profile in the Central Hub!')">📨 Notify incomplete</button><button class="btn btn-acc btn-sm" onclick="openModal('add-person')">+ Add person</button></div>
+    </div>
+    <div class="page-body">
+      <div class="filter-row" id="dir-team-filters"></div>
+      <div class="dir-grid" id="dir-grid"></div>
+    </div>
+  </div>
+
+  <!-- OOO -->
+  <div id="page-ooo" class="page">
+    <div class="topbar"><div><div class="tb-title">OOO calendar</div><div class="tb-sub" id="ooo-stat">HiBob integration · 0 OOO entries</div></div>
+      <div class="topbar-right"><button class="btn btn-sm" onclick="simulateHiBob()">▶ Simulate HiBob import</button><button class="btn btn-acc btn-sm" onclick="openModal('add-ooo')">+ Add OOO</button></div>
+    </div>
+    <div class="page-body">
+      <div class="hibob-box">
+        <div style="font-size:24px;">👤</div>
+        <div><div class="hibob-title">HiBob → OOO sync</div><div class="hibob-desc">When connected, approved time-off from HiBob appears here automatically within 15 minutes. <strong>To enable:</strong> IT creates a HiBob API service user → generates API key → adds to hub config under Settings → Integrations. Central events (Monthly Routine, deadlines) are shown separately in blue.</div></div>
+      </div>
+      <div class="cal-header"><button class="cal-nav" onclick="calNav(-1)">‹</button><div class="cal-month" id="cal-label">June 2026</div><button class="cal-nav" onclick="calNav(1)">›</button></div>
+      <div class="cal-grid"><div class="cal-dh">Sun</div><div class="cal-dh">Mon</div><div class="cal-dh">Tue</div><div class="cal-dh">Wed</div><div class="cal-dh">Thu</div><div class="cal-dh">Fri</div><div class="cal-dh">Sat</div></div>
+      <div class="cal-grid" id="cal-body"></div>
+      <div style="margin-top:12px;display:flex;gap:12px;font-size:11px;align-items:center;flex-wrap:wrap;">
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:50%;background:#fca5a5;display:inline-block;"></span>OOO (HiBob)</span>
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:50%;background:#93c5fd;display:inline-block;"></span>Central event</span>
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:50%;background:rgba(108,99,255,.5);display:inline-block;"></span>Today</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detail-panel">
+  <div class="dp-head">
+    <div style="flex:1;">
+      <div id="dp-title" style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.4;"></div>
+      <div id="dp-badges" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+    </div>
+    <button class="dp-close" onclick="closeDetail()">×</button>
+  </div>
+  <div class="dp-body" id="dp-body"></div>
+  <div class="dp-footer">
+    <button class="btn" onclick="closeDetail()">Close</button>
+    <button class="btn btn-slack btn-sm" id="dp-slack-btn">💬 Notify Slack</button>
+    <button class="btn btn-acc" onclick="saveDetail()">Save changes</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="closeMBD(event)">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title" id="modal-title">Add</div><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-acc" onclick="submitModal()">Save</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"><span id="toast-msg"></span></div>
+
+<script>
+var currentModal='',currentDetailId=null,dirTeamFilter='All',prioTeamF='All',prioTypeF='All',calOffset=0;
+
+// ============================================================
+// PRIORITIES DATA (Brown Paper — strategic layer)
+// ============================================================
+var priorities=[
+  {id:'bp1',team:'RO',full:'Regional Operations',type:'Strategy',title:'AI adoption — training, workflows, and implementation',c:'#7c73ff',status:'In progress',owner:'',due:'2026-12-31',comments:[],backlogIds:['bl1']},
+  {id:'bp2',team:'RO',full:'Regional Operations',type:'Admin',title:'Getting governance and routines right with HR and data hygiene',c:'#7c73ff',status:'In progress',owner:'Katerina A.',due:'2026-06-30',comments:[{author:'Katerina A.',time:'2 days ago',text:'Coordinating with HR this week.',color:'#7c73ff'}],backlogIds:['bl2']},
+  {id:'bp3',team:'RO',full:'Regional Operations',type:'Strategy',title:'Coordinating change management from a regional perspective',c:'#7c73ff',status:'Not started',owner:'Aline V.',due:'2026-09-30',comments:[],backlogIds:[]},
+  {id:'bp4',team:'PO',full:'People Operations',type:'Stakeholder',title:'Central Total Rewards — design and rollout',c:'#e879f9',status:'Not started',owner:'Kelly S.',due:'2026-12-31',comments:[],backlogIds:[]},
+  {id:'bp5',team:'PO',full:'People Operations',type:'Strategy',title:'AI enablement as business as usual (BAU)',c:'#e879f9',status:'In progress',owner:'Kelly S.',due:'2026-06-20',comments:[{author:'Kelly S.',time:'1 day ago',text:'Pilot with PO team starts Monday.',color:'#e879f9'}],backlogIds:['bl3']},
+  {id:'bp6',team:'PO',full:'People Operations',type:'Admin',title:'Automations in new HRIS — #1 priority for People Ops',c:'#e879f9',status:'Blocked',owner:'Kelly S.',due:'2026-06-15',comments:[{author:'Kelly S.',time:'3 days ago',text:'Waiting on IT API access. Escalated.',color:'#e879f9'}],backlogIds:['bl4']},
+  {id:'bp7',team:'S',full:'Staffing',type:'Stakeholder',title:'The employee experience as we utilise AI in staffing',c:'#22c55e',status:'Not started',owner:'',due:'',comments:[],backlogIds:[]},
+  {id:'bp8',team:'S',full:'Staffing',type:'Strategy',title:'AI adoption and Datahub integration for Staffing',c:'#22c55e',status:'In progress',owner:'Katerina A.',due:'2026-07-01',comments:[],backlogIds:['bl5']},
+  {id:'bp9',team:'S',full:'Staffing',type:'Admin',title:'New staffing systems — implementation and migration',c:'#22c55e',status:'In progress',owner:'Katerina A.',due:'2026-08-01',comments:[],backlogIds:[]},
+  {id:'bp10',team:'S',full:'Staffing',type:'Strategy',title:'Sustainability for consultants as we grow',c:'#22c55e',status:'Not started',owner:'',due:'',comments:[],backlogIds:[]},
+  {id:'bp11',team:'TA',full:'Talent Acquisition',type:'Admin',title:'Connect pipelines and forecast across TA and Staffing',c:'#f59e0b',status:'Not started',owner:'',due:'',comments:[],backlogIds:['bl6']},
+  {id:'bp12',team:'TA',full:'Talent Acquisition',type:'Stakeholder',title:'Enabling interviewers — training and process',c:'#f59e0b',status:'In progress',owner:'Abigail S.',due:'2026-06-25',comments:[],backlogIds:[]},
+  {id:'bp13',team:'TA',full:'Talent Acquisition',type:'Strategy',title:'Leverage AI in TA operations',c:'#f59e0b',status:'In progress',owner:'Abigail S.',due:'2026-07-30',comments:[],backlogIds:['bl7']},
+  {id:'bp14',team:'F+',full:'Finance + Risk',type:'Strategy',title:'Integrate AI into Finance + Risk roles and workflows',c:'#ef4444',status:'Not started',owner:'Alvaro S.',due:'2026-12-31',comments:[],backlogIds:['bl8']},
+  {id:'bp15',team:'F+',full:'Finance + Risk',type:'Stakeholder',title:'Client risk and dependency management — framework',c:'#ef4444',status:'At risk',owner:'Alvaro S.',due:'2026-06-10',comments:[{author:'Alvaro S.',time:'Today',text:'Deadline approaching. CFO sign-off needed.',color:'#ef4444'}],backlogIds:[]},
+  {id:'bp16',team:'F+',full:'Finance + Risk',type:'Strategy',title:'Overall visibility via Data Hub — Finance view',c:'#ef4444',status:'In progress',owner:'Alvaro S.',due:'2026-08-15',comments:[],backlogIds:[]},
+  {id:'bp17',team:'CA',full:'Culture and Engagement',type:'Strategy',title:'Shared regional delivery of the DA way',c:'#8b5cf6',status:'In progress',owner:'Becka N.',due:'2026-07-01',comments:[],backlogIds:[]},
+  {id:'bp18',team:'CA',full:'Culture and Engagement',type:'Comms',title:'Global colleague support standards',c:'#8b5cf6',status:'In progress',owner:'Becka N.',due:'2026-07-15',comments:[],backlogIds:[]},
+  {id:'bp19',team:'K',full:'Knowledge',type:'Strategy',title:'Knowledge architecture rebuild — Guru and beyond',c:'#06b6d4',status:'Not started',owner:'',due:'',comments:[],backlogIds:[]},
+  {id:'bp20',team:'LA',full:'Learning & Development',type:'Strategy',title:'L&D framework for Central team roles',c:'#84cc16',status:'In progress',owner:'',due:'2026-07-01',comments:[],backlogIds:[]},
+];
+
+// ============================================================
+// BACKLOG DATA (Operational sub-product)
+// ============================================================
+var backlog=[
+  {id:'bl1',name:'Set up AI training plan for RO',linkedPrioId:'bp1',rag:'g',status:'In progress',owner:'Katerina A.',due:'2026-07-15',decision:'No',notes:''},
+  {id:'bl2',name:'HR governance routines — schedule and document',linkedPrioId:'bp2',rag:'a',status:'Planning',owner:'Katerina A.',due:'2026-06-30',decision:'No',notes:''},
+  {id:'bl3',name:'AI enablement BAU pilot — PO team',linkedPrioId:'bp5',rag:'g',status:'Active',owner:'Kelly S.',due:'2026-06-20',decision:'No',notes:''},
+  {id:'bl4',name:'HRIS automation — IT API access resolution',linkedPrioId:'bp6',rag:'r',status:'Blocked',owner:'Kelly S.',due:'2026-06-15',decision:'Yes — IT approval needed',notes:''},
+  {id:'bl5',name:'Datahub integration scoping — Staffing',linkedPrioId:'bp8',rag:'a',status:'Scoping',owner:'Katerina A.',due:'2026-07-01',decision:'No',notes:''},
+  {id:'bl6',name:'TA + Staffing pipeline connection — design',linkedPrioId:'bp11',rag:'a',status:'Not started',owner:'Abigail S.',due:'2026-08-01',decision:'No',notes:''},
+  {id:'bl7',name:'AI in TA ops — pilot design',linkedPrioId:'bp13',rag:'g',status:'In progress',owner:'Abigail S.',due:'2026-07-30',decision:'No',notes:''},
+  {id:'bl8',name:'GOVERNANCE / RACE framework — Finance + Risk',linkedPrioId:'bp14',rag:'r',status:'Blocked',owner:'TBC',due:'2026-06-20',decision:'Yes — leadership decision needed',notes:''},
+];
+
+var dirPeople=[
+  {id:'d1',i:'NR',n:'Nick Rodriguez',r:'Chief Executive Officer',team:'ELT',tz:'London 🇬🇧',time:'21:37',c:'#7c73ff',slack:'@nick',email:'nick@da.com',bio:'CEO of Delivery Associates. Responsible for overall strategy and external partnerships.',complete:true},
+  {id:'d2',i:'AN',n:'Anna Needs',r:'Chief People Officer',team:'ELT',tz:'Canberra 🇦🇺',time:'06:40',c:'#e879f9',slack:'@anna',email:'anna@da.com',bio:'CPO. Leads People Operations, Culture, and L&D globally.',complete:true},
+  {id:'d3',i:'GT',n:'Gui Trivellato',r:'Director / Chief Operating Officer',team:'ELT',tz:'São Paulo 🇧🇷',time:'17:40',c:'#22c55e',slack:'@gui',email:'gui@da.com',bio:'COO. Oversees regional operations and delivery quality.',complete:true},
+  {id:'d4',i:'DF',n:'Didier Faure',r:'Chief Financial Officer',team:'ELT',tz:'London 🇬🇧',time:'21:37',c:'#ef4444',slack:'@didier',email:'didier@da.com',bio:'CFO. Leads Finance, Risk, and commercial governance.',complete:true},
+  {id:'d5',i:'RS',n:'Renee Sturcq',r:'Chief of Staff (ELT & Board)',team:'ELT',tz:'São Paulo 🇧🇷',time:'17:40',c:'#7c73ff',slack:'@renee',email:'renee@da.com',bio:'',complete:false},
+  {id:'d6',i:'FV',n:'Francisca Villalobos',r:'Chief of Staff',team:'ELT',tz:'Santiago 🇨🇱',time:'16:40',c:'#7c73ff',slack:'@francisca',email:'francisca@da.com',bio:'',complete:false},
+  {id:'d7',i:'KV',n:'Kirsche Vincent',r:'EA to CEO and Chair Emeritus',team:'ELT',tz:'London 🇬🇧',time:'21:37',c:'#7c73ff',slack:'@kirsche',email:'kirsche@da.com',bio:'',complete:false},
+  {id:'d8',i:'AS2',n:'Alvaro Sanchez',r:'Head of Finance Ops & Business Intelligence',team:'Finance and Risk',tz:'Denver 🇺🇸',time:'14:40',c:'#ef4444',slack:'@alvaro',email:'alvaro@da.com',bio:'Finance Ops lead. Owns P&L reporting, BI dashboards, and vendor management.',complete:true},
+  {id:'d9',i:'KA',n:'Katerina Austerhuber',r:'Head of Staffing & Operations',team:'Staffing',tz:'London 🇬🇧',time:'21:37',c:'#22c55e',slack:'@katerina',email:'katerina@da.com',bio:'Heads Staffing and RO. Owns consultant pipeline and operational governance.',complete:true},
+  {id:'d10',i:'AS',n:'Abigail Smock',r:'Global Growth Lead',team:'Growth',tz:'Los Angeles 🇺🇸',time:'13:40',c:'#f59e0b',slack:'@abigail',email:'abigail@da.com',bio:'',complete:false},
+  {id:'d11',i:'KS',n:'Kelly Salerno',r:'Acting Head of People',team:'People Operations',tz:'—',time:'',c:'#e879f9',slack:'@kelly',email:'kelly@da.com',bio:'',complete:false},
+  {id:'d12',i:'BN',n:'Becka Nordstrom',r:'Change & Communications Senior Manager',team:'Culture and Engagement',tz:'—',time:'',c:'#8b5cf6',slack:'@becka',email:'becka@da.com',bio:'Leads Culture and Engagement. Owns internal comms strategy and change management.',complete:true},
+  {id:'d13',i:'AV',n:'Aline Ventura',r:'Regional Operations Coordinator',team:'Regional Operations',tz:'—',time:'',c:'#7c73ff',slack:'@aline',email:'aline@da.com',bio:'',complete:false},
+  {id:'d14',i:'AL',n:'Ana Lucia Dellien Iturri',r:'Marketing Specialist',team:'Growth',tz:'—',time:'',c:'#f59e0b',slack:'@analucia',email:'analucia@da.com',bio:'',complete:false},
+];
+
+var tasks=[], oooMap={}, automations=[
+  {id:'a1',name:'Deadline approaching — 3 days',desc:'Sends a Slack DM to the responsible person when a backlog deadline is within 3 days.',icon:'⏰',channel:'#central-alerts',on:true},
+  {id:'a2',name:'Weekly digest — due in 7 days',desc:'Every Monday at 9am posts all items due in the next 7 days to #central-updates.',icon:'📅',channel:'#central-updates',on:true},
+  {id:'a3',name:'Status changed to Blocked',desc:'Immediately notifies the team lead on Slack when any backlog item becomes Blocked.',icon:'🚨',channel:'#central-alerts',on:true},
+  {id:'a4',name:'No update for 14 days',desc:'If a backlog item has had no update for 14 days, prompts the owner to update the RAG.',icon:'💤',channel:'#central-updates',on:false},
+  {id:'a5',name:'Monthly RAG summary',desc:'First Monday of each month: posts full RAG summary to #central-updates.',icon:'📊',channel:'#central-updates',on:true},
+  {id:'a6',name:'New priority added',desc:'When a brown paper priority is added, notifies the Central Team lead and #central-updates.',icon:'✨',channel:'#central-updates',on:true},
+  {id:'a7',name:'Directory profile incomplete reminder',desc:'Weekly reminder to members who have not completed their directory profile.',icon:'👤',channel:'Direct message',on:true},
+  {id:'a8',name:'OOO overlap alert',desc:'When 2+ project leads from the same cross-functional project are OOO on the same day.',icon:'✈️',channel:'#central-alerts',on:false},
+];
+
+var upcomingEvents=[
+  {day:10,month:'Jun',title:'Monthly Central Routine',detail:'60-min · All Central team leads · Zoom + SharePoint',type:'routine'},
+  {day:15,month:'Jun',title:'HRIS automation deadline',detail:'Kelly S. — IT access needed by this date.',type:'deadline'},
+  {day:20,month:'Jun',title:'GOVERNANCE / RACE framework due',detail:'Leadership decision needed. Currently blocked.',type:'deadline'},
+  {day:25,month:'Jun',title:'Enabling interviewers — TA check-in',detail:'Abigail S. to share progress with TA + Staffing.',type:'checkin'},
+  {day:7,month:'Jul',title:'Monthly Central Routine',detail:'60-min · All Central team leads',type:'routine'},
+];
+
+var agendas={
+  '60':[{t:'0–5',n:'Check-in',d:'One word around the room. Async participants share in Slack thread 30min before.',o:'Rotating chair'},{t:'5–20',n:'Priority / progress / what we need',d:'Each team: top 1–2 priorities, progress, and specific ask. AI-summarized Slack thread pre-shared.',o:'All leads'},{t:'20–30',n:'RAG review — Central backlog',d:'Red and amber items surfaced from backlog. Decisions flagged. Green acknowledged only.',o:'Backlog owner'},{t:'30–40',n:'Cross-functional blockers',d:'Pre-submitted items. Owner presents. Action assigned.',o:'XF owner'},{t:'40–50',n:'Decisions + upcoming priorities',d:'Pre-flagged decisions resolved or escalated. Capacity check.',o:'Team Lead'},{t:'50–58',n:'Actions + ownership',d:'Actions confirmed. Owners named. Posted to SharePoint + Slack.',o:'Facilitator'},{t:'58–60',n:'Shout outs + close',d:'#central-wins recognition. Summary posted within 2h.',o:'Chair'}],
+  '45':[{t:'0–3',n:'Check-in',d:'One word. Async thread before call.',o:'Chair'},{t:'3–15',n:'Priority + RAG snapshot',d:'AI summary. Red/amber discussed live only.',o:'All leads'},{t:'15–30',n:'Blockers + decisions',d:'Live resolution only.',o:'XF owner'},{t:'30–42',n:'Actions + ownership',d:'Posted to SharePoint immediately.',o:'Facilitator'},{t:'42–45',n:'Shout out + close',d:'Summary within 1h.',o:'Chair'}],
+  '90':[{t:'0–10',n:'Check-in + context',d:'Round-table. Urgent items flagged.',o:'Chair'},{t:'10–30',n:'Priority / progress / what we need',d:'Full round. Discussion allowed.',o:'All leads'},{t:'30–45',n:'RAG review + backlog update',d:'Full review. New items proposed.',o:'Backlog owner'},{t:'45–65',n:'XF blockers + AI ideas',d:'Issues radar reviewed. Pilots identified.',o:'XF owner'},{t:'65–80',n:'Decisions + priorities',d:'All decisions resolved or escalated.',o:'Team Lead'},{t:'80–88',n:'Actions + ownership',d:'All owners confirmed before close.',o:'Facilitator'},{t:'88–90',n:'Shout outs + close',d:'Recognition. Summary within 2h.',o:'Chair'}]
+};
+
+var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var calEvents={'2026-6-10':[{label:'Central Routine',type:'event'}],'2026-7-7':[{label:'Central Routine',type:'event'}]};
+
+// ============================================================
+// NAV
+// ============================================================
+function go(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  var pg=document.getElementById('page-'+id); if(pg) pg.classList.add('active');
+  var map={home:0,board:1,priorities:2,backlog:3,automations:4,agenda:5,directory:6,ooo:7};
+  var items=document.querySelectorAll('.nav-item');
+  if(map[id]!==undefined&&items[map[id]]) items[map[id]].classList.add('active');
+  document.getElementById('main-scroll').scrollTop=0;
+  if(id==='priorities') buildPriorities();
+  if(id==='backlog') buildBacklog();
+  if(id==='automations') buildAutomations();
+  if(id==='agenda'){buildAgenda('60');buildWhatsNext();}
+  if(id==='directory') buildDir('');
+  if(id==='ooo') buildCal();
+  if(id==='home') buildHome();
+}
+
+// ============================================================
+// HOME
+// ============================================================
+function buildHome(){
+  var nxt=document.getElementById('home-next');
+  var ev=upcomingEvents[0];
+  nxt.innerHTML='<div style="font-size:12px;font-weight:700;">'+ev.day+' '+ev.month+' — '+ev.title+'</div><div style="font-size:11px;color:var(--muted);margin-top:3px;">'+ev.detail+'</div>';
+  var reds=backlog.filter(function(b){return b.rag==='r';});
+  var hr=document.getElementById('home-red'); hr.innerHTML='';
+  reds.forEach(function(b){
+    var d=document.createElement('div'); d.style.cssText='font-size:11px;padding:2px 0;color:#A32D2D;';
+    d.innerHTML='🔴 '+b.name+(b.due?' <span style="color:var(--faint);font-size:10px;">(due '+b.due+')</span>':'');
+    hr.appendChild(d);
+  });
+  var hp=document.getElementById('home-tasks');
+  if(tasks.length){hp.innerHTML='';tasks.slice(0,3).forEach(function(t){var d=document.createElement('div');d.style.cssText='font-size:11px;padding:2px 0;color:var(--muted);';d.textContent='· '+t.title;hp.appendChild(d);});}
+  else{hp.textContent='No tasks yet. Add on My board.';}
+}
+
+// ============================================================
+// PRIORITIES (Brown Paper)
+// ============================================================
+function buildPriorities(){
+  var tDefs=[{k:'All',l:'All',c:'#6c63ff'},{k:'RO',l:'Regional Operations',c:'#7c73ff'},{k:'PO',l:'People Operations',c:'#e879f9'},{k:'S',l:'Staffing',c:'#22c55e'},{k:'TA',l:'Talent Acquisition',c:'#f59e0b'},{k:'F+',l:'Finance + Risk',c:'#ef4444'},{k:'CA',l:'Culture and Engagement',c:'#8b5cf6'},{k:'K',l:'Knowledge',c:'#06b6d4'},{k:'LA',l:'Learning & Dev',c:'#84cc16'}];
+  var tf=document.getElementById('prio-team-filters'); tf.innerHTML='<span style="font-size:11px;font-weight:600;color:var(--muted);margin-right:4px;">Team:</span>';
+  tDefs.forEach(function(td){
+    var ch=document.createElement('div'); ch.className='fchip';
+    var act=prioTeamF===td.k;
+    ch.style.cssText='border-color:'+td.c+';color:'+(act?'#fff':td.c)+';background:'+(act?td.c:'transparent')+';';
+    ch.innerHTML=(td.k==='All'?'All':'<span style="width:18px;height:18px;border-radius:50%;background:'+(act?'rgba(255,255,255,.3)':'rgba(255,255,255,.9)')+';color:'+td.c+';display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;">'+td.k+'</span> '+td.l);
+    ch.onclick=(function(k){return function(){prioTeamF=k;buildPriorities();};})(td.k);
+    tf.appendChild(ch);
+  });
+  var types=['All','Strategy','Admin','Comms','Stakeholder'];
+  var tf2=document.getElementById('prio-type-filters'); tf2.innerHTML='<span style="font-size:11px;font-weight:600;color:var(--muted);margin-right:4px;">Type:</span>';
+  types.forEach(function(t){
+    var ch=document.createElement('div'); ch.className='tchip'+(prioTypeF===t?' active':'');
+    ch.textContent=t; ch.onclick=(function(tt){return function(){prioTypeF=tt;buildPriorities();};})(t);
+    tf2.appendChild(ch);
+  });
+  var filtered=priorities.filter(function(p){return (prioTeamF==='All'||p.team===prioTeamF)&&(prioTypeF==='All'||p.type===prioTypeF);});
+  var container=document.getElementById('priorities-container'); container.innerHTML='';
+  // Group by team
+  var teams=prioTeamF==='All'?['RO','PO','S','TA','F+','CA','K','LA']:[prioTeamF];
+  var tNames={RO:'Regional Operations',PO:'People Operations',S:'Staffing',TA:'Talent Acquisition','F+':'Finance + Risk',CA:'Culture and Engagement',K:'Knowledge',LA:'Learning & Dev'};
+  var tColors={RO:'#7c73ff',PO:'#e879f9',S:'#22c55e',TA:'#f59e0b','F+':'#ef4444',CA:'#8b5cf6',K:'#06b6d4',LA:'#84cc16'};
+  teams.forEach(function(team){
+    var teamItems=filtered.filter(function(p){return p.team===team;});
+    if(!teamItems.length) return;
+    var section=document.createElement('div'); section.className='team-section';
+    var head=document.createElement('div'); head.className='team-section-head';
+    head.style.background=tColors[team]+'15';
+    head.innerHTML='<div class="ts-badge" style="background:'+tColors[team]+';">'+team+'</div><div class="ts-name">'+tNames[team]+'</div><span class="ts-count">'+teamItems.length+' priorities</span>';
+    section.appendChild(head);
+    teamItems.forEach(function(p){
+      var statusColors={'Not started':'#9ca3af','In progress':'#6c63ff','Blocked':'#ef4444','At risk':'#EF9F27','Done':'#639922'};
+      var sc=statusColors[p.status]||'#9ca3af';
+      var card=document.createElement('div'); card.className='priority-card';
+      card.style.borderLeft='3px solid '+p.c;
+      var backlogCount=p.backlogIds.length;
+      card.innerHTML='<div class="pc-left"><div class="pc-tags"><span class="tag" style="background:'+p.c+'15;color:'+p.c+';">'+p.type+'</span>'+(backlogCount?'<span class="has-backlog-badge" onclick="event.stopPropagation();go(\'backlog\')">⚙ '+backlogCount+' backlog item'+(backlogCount>1?'s':'')+'</span>':'')+'</div><div class="pc-title">'+p.title+'</div><div class="pc-meta">'+(p.owner?'<span>👤 '+p.owner+'</span>':'<span style="color:var(--faint);">No owner yet</span>')+(p.due?'<span>📅 '+p.due+'</span>':'')+'<span>💬 '+p.comments.length+' comment'+(p.comments.length!==1?'s':'')+'</span></div></div><div class="pc-right"><span class="status-pill" style="background:'+sc+'20;color:'+sc+';">'+p.status+'</span></div>';
+      card.onclick=(function(pr){return function(){openDetail(pr.id,'priority');};})(p);
+      section.appendChild(card);
+    });
+    container.appendChild(section);
+  });
+  document.getElementById('prio-stat').textContent='8 teams · '+filtered.length+' priorities in view · Source: Central Retreat 2025';
+}
+
+// ============================================================
+// BACKLOG
+// ============================================================
+function buildBacklog(){
+  var tbody=document.getElementById('backlog-body'); tbody.innerHTML='';
+  var rc=0,ac=0,gc=0;
+  backlog.forEach(function(b){
+    if(b.rag==='r')rc++;else if(b.rag==='a')ac++;else gc++;
+    var rdot=b.rag==='r'?'rag-r':b.rag==='a'?'rag-a':'rag-g';
+    var ic=b.rag==='r'?'#E24B4A':b.rag==='a'?'#EF9F27':'#639922';
+    var stag={Active:'tag-g','In progress':'tag-b','Needs owner':'tag-r','Pilot':'tag-g',Planning:'tag-a','Not started':'tag-gray',Blocked:'tag-r',Scoping:'tag-a'};
+    var linked=priorities.find(function(p){return p.id===b.linkedPrioId;});
+    var linkedStr=linked?('<span style="font-size:10px;color:var(--accent);cursor:pointer;font-weight:600;" onclick="event.stopPropagation();openDetail(\''+linked.id+'\',\'priority\')">↗ '+linked.title.slice(0,32)+'...</span>'):'<span style="font-size:10px;color:var(--faint);">Not linked</span>';
+    var dueClass=b.due&&new Date(b.due)<new Date('2026-06-10')?'style="color:#A32D2D;font-weight:700;"':'style="color:var(--muted);"';
+    var decTag=b.decision&&b.decision!=='No'?'<span class="tag tag-r" style="font-size:9px;">'+b.decision+'</span>':'<span style="font-size:10px;color:var(--faint);">—</span>';
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><span class="rag-dot '+rdot+'"></span></td><td><div style="font-weight:700;font-size:12px;">'+b.name+'</div></td><td>'+linkedStr+'</td><td><span class="tag '+(stag[b.status]||'tag-gray')+'">'+b.status+'</span></td><td style="font-size:11px;font-weight:600;color:var(--text);">'+b.owner+'</td><td '+dueClass+'>'+b.due+'</td><td><span class="rag-dot '+rdot+'"></span></td><td>'+decTag+'</td><td><button class="btn btn-slack" style="font-size:10px;padding:3px 8px;" onclick="event.stopPropagation();toast(\'📨 Slack reminder sent for: '+b.name.replace(/'/g,"\\'")+'\')" >💬 Remind</button></td>';
+    tr.style.cursor='pointer';
+    tr.onclick=(function(bl){return function(){openDetail(bl.id,'backlog');};})(b);
+    tbody.appendChild(tr);
+  });
+  document.getElementById('rag-r').textContent=rc;
+  document.getElementById('rag-a').textContent=ac;
+  document.getElementById('rag-g').textContent=gc;
+}
+
+// ============================================================
+// DETAIL PANEL
+// ============================================================
+function openDetail(id,type){
+  var item=(type==='priority')?priorities.find(function(p){return p.id===id;}):backlog.find(function(b){return b.id===id;});
+  if(!item) return;
+  currentDetailId={id:id,type:type};
+  document.getElementById('dp-title').textContent=item.title||item.name;
+  var badges=document.getElementById('dp-badges'); badges.innerHTML='';
+  if(item.full){var b1=document.createElement('span');b1.className='tag';b1.style.cssText='background:'+item.c+'20;color:'+item.c+';';b1.textContent=item.full;badges.appendChild(b1);}
+  if(item.type){var b2=document.createElement('span');b2.className='tag tag-gray';b2.textContent=item.type;badges.appendChild(b2);}
+  if(type==='backlog'&&item.linkedPrioId){var lp=priorities.find(function(p){return p.id===item.linkedPrioId;});if(lp){var b3=document.createElement('span');b3.className='tag tag-b';b3.style.cursor='pointer';b3.textContent='↗ Linked: '+lp.title.slice(0,30)+'...';b3.onclick=function(){openDetail(lp.id,'priority');};badges.appendChild(b3);}}
+
+  var stOpts=['Not started','In progress','At risk','Blocked','Done'].map(function(s){return '<option value="'+s+'"'+(item.status===s?' selected':'')+'>'+s+'</option>';}).join('');
+  var ragOpts=type==='backlog'?'<div class="dp-label">RAG status</div><select class="dp-select" id="dps-rag"><option value="g"'+(item.rag==='g'?' selected':'')+'>🟢 Green — on track</option><option value="a"'+(item.rag==='a'?' selected':'')+'>🟡 Amber — at risk</option><option value="r"'+(item.rag==='r'?' selected':'')+'>🔴 Red — needs action</option></select>':'';
+  var decOpts=type==='backlog'?'<div class="dp-label">Decision needed?</div><input class="dp-input" id="dps-dec" value="'+(item.decision||'')+'" placeholder="Describe the decision needed, or type No">':'';
+  var assigneeOpts=dirPeople.map(function(p){return '<option value="'+p.n+'"'+(item.owner===p.n?' selected':'')+'>'+p.n+' — '+p.r+'</option>';}).join('');
+
+  document.getElementById('dp-body').innerHTML=
+    '<div class="dp-sec-title">Status & ownership</div>'+
+    '<div class="dp-label">Status</div><select class="dp-select" id="dps-status">'+stOpts+'</select>'+
+    '<div class="dp-label">Responsible / owner</div><select class="dp-select" id="dps-owner"><option value="">— Select —</option>'+assigneeOpts+'</select>'+
+    '<div class="dp-label">Due date</div><input class="dp-input" id="dps-due" type="date" value="'+(item.due||'')+'">'+
+    ragOpts+decOpts+
+    '<div class="dp-label">Notes</div><textarea class="dp-textarea" id="dps-notes" placeholder="Add notes...">'+(item.notes||item.bio||'')+'</textarea>'+
+    '<div class="dp-sec-title" style="margin-top:18px;">Comments ('+((item.comments&&item.comments.length)||0)+')</div>'+
+    (item.comments&&item.comments.length?item.comments.map(function(c){return '<div class="comment-item"><div class="comment-av" style="background:'+(c.color||'#6c63ff')+'20;color:'+(c.color||'#6c63ff')+';">'+c.author.slice(0,2).toUpperCase()+'</div><div style="flex:1;"><span class="comment-author">'+c.author+'</span><span class="comment-time">'+c.time+'</span><div class="comment-text">'+c.text+'</div></div></div>';}).join(''):'<div style="font-size:11px;color:var(--faint);margin-bottom:8px;">No comments yet.</div>')+
+    '<div class="comment-row"><textarea class="comment-input" id="dps-comment" placeholder="Add a comment..." rows="2"></textarea><button class="btn btn-acc btn-sm" onclick="addComment()">Post</button></div>';
+
+  document.getElementById('dp-slack-btn').onclick=function(){toast('📨 Notification sent to Slack for: '+(item.title||item.name));};
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function addComment(){
+  var text=document.getElementById('dps-comment').value.trim(); if(!text) return;
+  var item=currentDetailId.type==='priority'?priorities.find(function(p){return p.id===currentDetailId.id;}):backlog.find(function(b){return b.id===currentDetailId.id;});
+  if(!item) return;
+  if(!item.comments) item.comments=[];
+  item.comments.push({author:'You',time:'Just now',text:text,color:'#6c63ff'});
+  openDetail(currentDetailId.id,currentDetailId.type);
+  toast('💬 Comment added!');
+}
+
+function saveDetail(){
+  var id=currentDetailId.id, type=currentDetailId.type;
+  var item=type==='priority'?priorities.find(function(p){return p.id===id;}):backlog.find(function(b){return b.id===id;});
+  if(!item) return;
+  var prevStatus=item.status;
+  item.status=document.getElementById('dps-status').value;
+  item.owner=document.getElementById('dps-owner').value;
+  item.due=document.getElementById('dps-due').value;
+  if(document.getElementById('dps-rag')) item.rag=document.getElementById('dps-rag').value;
+  if(document.getElementById('dps-dec')) item.decision=document.getElementById('dps-dec').value;
+  if(document.getElementById('dps-notes')) item.notes=document.getElementById('dps-notes').value;
+  var blocked=(item.status==='Blocked'||item.status==='At risk')&&prevStatus!==item.status;
+  toast(blocked?'🚨 Status → '+item.status+'. Automation triggered → #central-alerts':'✅ Changes saved!');
+  closeDetail();
+  if(document.getElementById('page-priorities').classList.contains('active')) buildPriorities();
+  if(document.getElementById('page-backlog').classList.contains('active')) buildBacklog();
+}
+function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');currentDetailId=null;}
+
+// ============================================================
+// AUTOMATIONS
+// ============================================================
+function buildAutomations(){
+  var c=document.getElementById('automations-list'); c.innerHTML='';
+  automations.forEach(function(a){
+    var card=document.createElement('div'); card.className='auto-card';
+    card.innerHTML='<div class="auto-icon">'+a.icon+'</div><div style="flex:1;"><div class="auto-title">'+a.name+'</div><div class="auto-desc">'+a.desc+'</div><div style="font-size:10px;color:var(--faint);margin-top:4px;">Channel: '+a.channel+'</div></div><div style="margin-left:auto;flex-shrink:0;"><div class="toggle-track'+(a.on?' on':'')+'" onclick="toggleAuto(\''+a.id+'\',this)"><div class="toggle-thumb"></div></div></div>';
+    c.appendChild(card);
+  });
+}
+function toggleAuto(id,el){
+  var a=automations.find(function(x){return x.id===id;}); if(!a) return;
+  a.on=!a.on; el.classList.toggle('on',a.on);
+  toast(a.on?'✅ Automation enabled: '+a.name:'⏸ Paused: '+a.name);
+}
+
+// ============================================================
+// AGENDA + WHAT'S NEXT
+// ============================================================
+function buildWhatsNext(){
+  var c=document.getElementById('whats-next-list'); c.innerHTML='';
+  upcomingEvents.forEach(function(ev){
+    var border={'routine':'#6c63ff','deadline':'#ef4444','checkin':'#EF9F27'}[ev.type]||'#9ca3af';
+    var card=document.createElement('div'); card.className='next-card'; card.style.borderLeft='3px solid '+border;
+    card.innerHTML='<div class="next-date-box"><div class="next-day">'+ev.day+'</div><div class="next-mon">'+ev.month+'</div></div><div><div class="next-title">'+ev.title+'</div><div class="next-detail">'+ev.detail+'</div></div>';
+    c.appendChild(card);
+  });
+}
+function buildAgenda(size){
+  var c=document.getElementById('agenda-container'); c.innerHTML='';
+  agendas[size].forEach(function(item){
+    var row=document.createElement('div'); row.className='agenda-row';
+    row.innerHTML='<div class="atime">'+item.t+' min</div><div><div class="aname">'+item.n+'</div><div class="adetail">'+item.d+'</div></div><div class="owner-chip">'+item.o+'</div>';
+    c.appendChild(row);
+  });
+}
+function switchAgenda(size,el){
+  document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active'); buildAgenda(size);
+}
+
+// ============================================================
+// DIRECTORY
+// ============================================================
+function buildDir(search){
+  var teams=['All','ELT','Finance and Risk','Staffing','Growth','People Operations','Culture and Engagement','Regional Operations'];
+  var df=document.getElementById('dir-team-filters'); df.innerHTML='';
+  teams.forEach(function(t){
+    var pill=document.createElement('div'); pill.className='tchip'+(dirTeamFilter===t?' active':'');
+    pill.textContent=t; pill.onclick=(function(tt){return function(){dirTeamFilter=tt;buildDir(document.getElementById('dir-search-input').value||'');};})(t);
+    df.appendChild(pill);
+  });
+  var filtered=dirPeople.filter(function(p){
+    return (dirTeamFilter==='All'||p.team===dirTeamFilter)&&(!search||p.n.toLowerCase().includes(search.toLowerCase())||p.r.toLowerCase().includes(search.toLowerCase())||p.team.toLowerCase().includes(search.toLowerCase()));
+  });
+  var grid=document.getElementById('dir-grid'); grid.innerHTML='';
+  if(!filtered.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--faint);">No results.</div>';return;}
+  filtered.forEach(function(p){
+    var card=document.createElement('div'); card.className='dir-card';
+    if(!p.complete) card.innerHTML='<div class="dir-incomplete" title="Profile incomplete — click to edit"></div>';
+    card.innerHTML+='<div class="dir-top" style="background:'+p.c+';"></div><div class="dir-av" style="background:'+p.c+'20;color:'+p.c+';">'+p.i.replace(/\d/g,'').slice(0,2)+'</div><div class="dir-name">'+p.n+'</div><div class="dir-role">'+p.r+'</div><span class="dir-pill" style="background:'+p.c+'20;color:'+p.c+';">'+p.team+'</span>'+(p.bio?'<div style="font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5;">'+p.bio+'</div>':'<div style="font-size:10px;color:#854F0B;margin-top:6px;font-weight:600;">⚠ Profile incomplete — click to edit</div>')+
+    '<div class="dir-tz"><span>'+p.tz+'</span>'+(p.time?'<span style="font-weight:700;">'+p.time+'</span>':'')+'</div><div class="dir-actions"><button class="dir-btn" onclick="event.stopPropagation();toast(\'📧 Email to '+p.n+'\')">✉ Email</button><button class="dir-btn" onclick="event.stopPropagation();toast(\'💬 Slack → '+p.slack+'\')">💬 Slack</button><button class="dir-btn btn-acc" style="flex:none;padding:6px 10px;font-size:11px;font-weight:700;border-radius:8px;cursor:pointer;background:var(--accent);color:#fff;border:none;" onclick="event.stopPropagation();editProfile(\''+p.id+'\')">✏ Edit</button></div>';
+    card.onclick=(function(person){return function(){editProfile(person.id);};})(p);
+    grid.appendChild(card);
+  });
+}
+function filterDir(v){buildDir(v);}
+function editProfile(id){
+  var p=dirPeople.find(function(x){return x.id===id;}); if(!p) return;
+  openModal('edit-person');
+  setTimeout(function(){
+    document.getElementById('mf-dname').value=p.n;
+    document.getElementById('mf-drole').value=p.r;
+    document.getElementById('mf-dteam').value=p.team;
+    document.getElementById('mf-dtz').value=p.tz;
+    document.getElementById('mf-dslack').value=p.slack||'';
+    document.getElementById('mf-demail').value=p.email||'';
+    document.getElementById('mf-dbio').value=p.bio||'';
+    document.getElementById('modal-title').textContent='Edit profile — '+p.n;
+    document.getElementById('modal-body').dataset.editId=id;
+  },60);
+}
+
+// ============================================================
+// OOO CALENDAR
+// ============================================================
+function buildCal(){
+  var d=new Date(2026,5+calOffset,1);
+  document.getElementById('cal-label').textContent=MONTHS[d.getMonth()]+' '+d.getFullYear();
+  var firstDay=d.getDay(), daysInMonth=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+  var body=document.getElementById('cal-body'); body.innerHTML='';
+  var today=new Date(2026,5,4);
+  for(var i=0;i<firstDay;i++){var e=document.createElement('div');e.className='cal-cell cal-empty';body.appendChild(e);}
+  for(var dd=1;dd<=daysInMonth;dd++){
+    var cell=document.createElement('div'); cell.className='cal-cell';
+    var isToday=(dd===today.getDate()&&d.getMonth()===today.getMonth()&&d.getFullYear()===today.getFullYear());
+    if(isToday) cell.classList.add('today');
+    var key=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+dd;
+    var html='<div class="cal-date">'+dd+'</div>';
+    if(oooMap[key]){cell.classList.add('ooo-cell');oooMap[key].forEach(function(n){html+='<span class="cal-tag" style="background:rgba(226,75,74,.1);color:#A32D2D;">✈ '+n+'</span>';});}
+    if(calEvents[key]){calEvents[key].forEach(function(ev){html+='<span class="cal-tag" style="background:rgba(108,99,255,.1);color:var(--accent);">📅 '+ev.label+'</span>';});if(!oooMap[key])cell.classList.add('has-event');}
+    cell.innerHTML=html;
+    body.appendChild(cell);
+  }
+  var oooCount=Object.values(oooMap).reduce(function(a,v){return a+v.length;},0);
+  document.getElementById('ooo-stat').textContent='HiBob integration · '+oooCount+' OOO entries';
+}
+function calNav(dir){calOffset+=dir;buildCal();}
+function simulateHiBob(){
+  oooMap['2026-6-15']=['Anna N.'];oooMap['2026-6-16']=['Anna N.'];oooMap['2026-6-17']=['Anna N.'];
+  oooMap['2026-6-18']=['Anna N.'];oooMap['2026-6-19']=['Anna N.'];oooMap['2026-6-22']=['Abigail S.'];
+  buildCal(); toast('✅ HiBob simulated — Anna N. (15–19 Jun) and Abigail S. (22 Jun) loaded.');
+}
+
+// ============================================================
+// MY BOARD
+// ============================================================
+function buildBoard(){
+  var cols={bl:[],wk:[],ip:[],dn:[]};
+  tasks.forEach(function(t){if(cols[t.col]) cols[t.col].push(t);});
+  ['bl','wk','ip','dn'].forEach(function(c){
+    var cont=document.getElementById('col-'+c), emp=document.getElementById('emp-'+c);
+    cont.innerHTML=''; document.getElementById('cnt-'+c).textContent=cols[c].length;
+    emp.style.display=cols[c].length?'none':'block';
+    cols[c].forEach(function(t){
+      var card=document.createElement('div'); card.className='kcard';
+      var tagClass='tag-p'+t.priority.slice(1);
+      card.innerHTML='<div class="kcard-meta" style="margin-bottom:6px;padding:0;border:none;"><span class="tag '+tagClass+'">'+t.priority+'</span>'+(t.remind&&t.remind!==''?'<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:rgba(74,144,226,.1);color:#1264a3;">⏰ '+t.remind+'</span>':'')+'</div><div class="kcard-title">'+t.title+'</div><div style="display:flex;justify-content:flex-end;gap:5px;margin-top:8px;"><button style="font-size:9px;padding:2px 7px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:var(--white);" onclick="moveTask(\''+t.id+'\',\''+c+'\')">Move →</button><button style="font-size:9px;padding:2px 7px;border-radius:6px;border:1px solid rgba(226,75,74,.3);cursor:pointer;color:#A32D2D;background:transparent;" onclick="removeTask(\''+t.id+'\')">✕</button></div>';
+      cont.appendChild(card);
+    });
+  });
+  document.getElementById('board-stat').textContent=tasks.length+' active tasks';
+  var hp=document.getElementById('home-tasks');
+  if(tasks.length){hp.innerHTML='';tasks.slice(0,3).forEach(function(t){var d=document.createElement('div');d.style.cssText='font-size:11px;padding:2px 0;color:var(--muted);';d.textContent='· '+t.title;hp.appendChild(d);});}
+  else{hp.textContent='No tasks yet.';}
+}
+function moveTask(id,cur){var cols=['bl','wk','ip','dn'],t=tasks.find(function(x){return x.id===id;});if(!t)return;t.col=cols[(cols.indexOf(cur)+1)%cols.length];buildBoard();toast('✅ Moved!');}
+function removeTask(id){tasks=tasks.filter(function(t){return t.id!==id;});buildBoard();toast('🗑 Removed.');}
+
+// ============================================================
+// MODALS
+// ============================================================
+var modalForms={
+  'add-task':{title:'Add task to My board',html:'<div class="mf-field"><label class="mf-label">Task title *</label><input class="mf-input" id="mf-title" placeholder="e.g. Set up SharePoint backlog"></div><div class="mf-field"><label class="mf-label">Column</label><select class="mf-select" id="mf-col"><option value="bl">Backlog</option><option value="wk">This week</option><option value="ip">In progress</option><option value="dn">Done</option></select></div><div class="mf-field"><label class="mf-label">Priority</label><select class="mf-select" id="mf-pri"><option>P1</option><option>P2</option><option>P3</option></select></div><div class="mf-field"><label class="mf-label">Slack reminder</label><select class="mf-select" id="mf-remind"><option value="">No reminder</option><option value="Daily">Daily at 9am</option><option value="Weekly">Weekly on Monday</option><option value="On due date">On due date</option></select></div>'},
+  'add-priority':{title:'Add brown paper priority',html:'<div class="mf-field"><label class="mf-label">Priority title *</label><input class="mf-input" id="mf-ptitle" placeholder="What is the team focused on?"></div><div class="mf-field"><label class="mf-label">Team</label><select class="mf-select" id="mf-pteam"><option value="RO">Regional Operations</option><option value="PO">People Operations</option><option value="S">Staffing</option><option value="TA">Talent Acquisition</option><option value="F+">Finance + Risk</option><option value="CA">Culture and Engagement</option><option value="K">Knowledge</option><option value="LA">Learning & Dev</option></select></div><div class="mf-field"><label class="mf-label">Type</label><select class="mf-select" id="mf-ptype"><option>Strategy</option><option>Admin</option><option>Comms</option><option>Stakeholder</option></select></div><div class="mf-field"><label class="mf-label">Owner</label><input class="mf-input" id="mf-powner" placeholder="Responsible person"></div><div class="mf-field"><label class="mf-label">Due date</label><input class="mf-input" id="mf-pdue" type="date"></div>'},
+  'add-project':{title:'Add action to Central backlog',html:'<div class="mf-field"><label class="mf-label">Action / project name *</label><input class="mf-input" id="mf-bname" placeholder="e.g. Set up Guru role directory"></div><div class="mf-field"><label class="mf-label">Linked priority</label><select class="mf-select" id="mf-blink"><option value="">— None —</option>'+priorities.map(function(p){return '<option value="'+p.id+'">'+p.team+': '+p.title.slice(0,50)+'</option>';}).join('')+'</select></div><div class="mf-field"><label class="mf-label">Responsible</label><select class="mf-select" id="mf-bowner"><option value="">— Select —</option>'+dirPeople.map(function(p){return '<option>'+p.n+'</option>';}).join('')+'</select></div><div class="mf-field"><label class="mf-label">RAG</label><select class="mf-select" id="mf-brag"><option value="g">🟢 Green</option><option value="a">🟡 Amber</option><option value="r">🔴 Red</option></select></div><div class="mf-field"><label class="mf-label">Status</label><select class="mf-select" id="mf-bstat"><option>Not started</option><option>In progress</option><option>Planning</option><option>Blocked</option><option>Done</option></select></div><div class="mf-field"><label class="mf-label">Due date</label><input class="mf-input" id="mf-bdue" type="date"></div><div class="mf-field"><label class="mf-label">Decision needed?</label><input class="mf-input" id="mf-bdec" placeholder="Describe or type No"></div>'},
+  'add-ooo':{title:'Add OOO entry',html:'<div class="mf-field"><label class="mf-label">Person name *</label><input class="mf-input" id="mf-oname" placeholder="e.g. Anna Needs"></div><div class="mf-field"><label class="mf-label">Start date *</label><input class="mf-input" id="mf-ostart" type="date" value="2026-06-01"></div><div class="mf-field"><label class="mf-label">End date</label><input class="mf-input" id="mf-oend" type="date"></div>'},
+  'add-automation':{title:'Add automation',html:'<div class="mf-field"><label class="mf-label">Automation name *</label><input class="mf-input" id="mf-aname" placeholder="e.g. Weekly digest"></div><div class="mf-field"><label class="mf-label">Description</label><textarea class="mf-textarea" id="mf-adesc" placeholder="What does this do?"></textarea></div><div class="mf-field"><label class="mf-label">Trigger</label><select class="mf-select" id="mf-atrig"><option>Deadline approaching (3 days)</option><option>Deadline approaching (7 days)</option><option>Status changed to Blocked</option><option>Monthly (first Monday)</option></select></div><div class="mf-field"><label class="mf-label">Slack channel</label><input class="mf-input" id="mf-achan" placeholder="#central-alerts"></div>'},
+  'add-person':{title:'Add person to directory',html:'<div class="mf-field"><label class="mf-label">Full name *</label><input class="mf-input" id="mf-dname"></div><div class="mf-field"><label class="mf-label">Role / title</label><input class="mf-input" id="mf-drole"></div><div class="mf-field"><label class="mf-label">Team</label><input class="mf-input" id="mf-dteam"></div><div class="mf-field"><label class="mf-label">Timezone / location</label><input class="mf-input" id="mf-dtz"></div><div class="mf-field"><label class="mf-label">Slack handle</label><input class="mf-input" id="mf-dslack" placeholder="@handle"></div><div class="mf-field"><label class="mf-label">Email</label><input class="mf-input" id="mf-demail"></div><div class="mf-field"><label class="mf-label">Bio / what I own</label><textarea class="mf-textarea" id="mf-dbio"></textarea></div>'},
+  'edit-person':{title:'Edit profile',html:'<div class="mf-field"><label class="mf-label">Full name *</label><input class="mf-input" id="mf-dname"></div><div class="mf-field"><label class="mf-label">Role / title</label><input class="mf-input" id="mf-drole"></div><div class="mf-field"><label class="mf-label">Team</label><input class="mf-input" id="mf-dteam"></div><div class="mf-field"><label class="mf-label">Timezone / location</label><input class="mf-input" id="mf-dtz"></div><div class="mf-field"><label class="mf-label">Slack handle</label><input class="mf-input" id="mf-dslack"></div><div class="mf-field"><label class="mf-label">Email</label><input class="mf-input" id="mf-demail"></div><div class="mf-field"><label class="mf-label">Bio / what I own</label><textarea class="mf-textarea" id="mf-dbio" placeholder="Short description of your role, what you own, and when to contact you..."></textarea></div>'},
+};
+
+function openModal(type){
+  currentModal=type;
+  var f=modalForms[type]; if(!f) return;
+  document.getElementById('modal-title').textContent=f.title;
+  document.getElementById('modal-body').innerHTML=f.html;
+  document.getElementById('modal-backdrop').classList.add('open');
+  var first=document.querySelector('#modal-body input,#modal-body select,#modal-body textarea');
+  if(first) setTimeout(function(){first.focus();},80);
+}
+function closeModal(){document.getElementById('modal-backdrop').classList.remove('open');currentModal='';}
+function closeMBD(e){if(e.target===document.getElementById('modal-backdrop'))closeModal();}
+
+function submitModal(){
+  if(currentModal==='add-task'){
+    var t=document.getElementById('mf-title').value.trim(); if(!t){alert('Enter a task title.');return;}
+    tasks.push({id:Date.now()+'',title:t,col:document.getElementById('mf-col').value,priority:document.getElementById('mf-pri').value,remind:document.getElementById('mf-remind').value});
+    buildBoard(); var r=document.getElementById('mf-remind').value;
+    toast(r?'✅ Task added + 📨 Slack reminder ('+r+')':'✅ Task added!');
+  } else if(currentModal==='add-priority'){
+    var pt=document.getElementById('mf-ptitle').value.trim(); if(!pt){alert('Enter a title.');return;}
+    var tmap={'RO':'#7c73ff','PO':'#e879f9','S':'#22c55e','TA':'#f59e0b','F+':'#ef4444','CA':'#8b5cf6','K':'#06b6d4','LA':'#84cc16'};
+    var fmap={'RO':'Regional Operations','PO':'People Operations','S':'Staffing','TA':'Talent Acquisition','F+':'Finance + Risk','CA':'Culture and Engagement','K':'Knowledge','LA':'Learning & Dev'};
+    var team=document.getElementById('mf-pteam').value;
+    priorities.push({id:'bp'+Date.now(),team:team,full:fmap[team],type:document.getElementById('mf-ptype').value,title:pt,c:tmap[team],status:'Not started',owner:document.getElementById('mf-powner').value,due:document.getElementById('mf-pdue').value,comments:[],backlogIds:[]});
+    buildPriorities(); toast('✅ Priority added for '+fmap[team]+'!');
+  } else if(currentModal==='add-project'){
+    var bn=document.getElementById('mf-bname').value.trim(); if(!bn){alert('Enter a name.');return;}
+    var newId='bl'+Date.now();
+    var linkedId=document.getElementById('mf-blink').value;
+    if(linkedId){var lp=priorities.find(function(p){return p.id===linkedId;});if(lp)lp.backlogIds.push(newId);}
+    backlog.push({id:newId,name:bn,linkedPrioId:linkedId,rag:document.getElementById('mf-brag').value,status:document.getElementById('mf-bstat').value,owner:document.getElementById('mf-bowner').value,due:document.getElementById('mf-bdue').value,decision:document.getElementById('mf-bdec').value||'No',notes:''});
+    buildBacklog(); toast('✅ Action added to Central backlog!');
+  } else if(currentModal==='add-ooo'){
+    var on=document.getElementById('mf-oname').value.trim(), os=document.getElementById('mf-ostart').value; if(!on||!os){alert('Fill name and start date.');return;}
+    var oe=document.getElementById('mf-oend').value||os;
+    var cur=new Date(os),end=new Date(oe);
+    while(cur<=end){var k=cur.getFullYear()+'-'+(cur.getMonth()+1)+'-'+cur.getDate();if(!oooMap[k])oooMap[k]=[];oooMap[k].push(on.split(' ').map(function(w){return w[0];}).join('').slice(0,3)+'.');cur.setDate(cur.getDate()+1);}
+    buildCal(); toast('✅ OOO added!');
+  } else if(currentModal==='add-automation'){
+    var an=document.getElementById('mf-aname').value.trim(); if(!an){alert('Enter a name.');return;}
+    automations.push({id:'a'+Date.now(),name:an,desc:document.getElementById('mf-adesc').value,icon:'⚡',channel:document.getElementById('mf-achan').value||'#central-updates',on:true});
+    buildAutomations(); toast('✅ Automation added!');
+  } else if(currentModal==='add-person'||currentModal==='edit-person'){
+    var dn=document.getElementById('mf-dname').value.trim(); if(!dn){alert('Enter a name.');return;}
+    var editId=document.getElementById('modal-body').dataset.editId;
+    if(editId){
+      var p=dirPeople.find(function(x){return x.id===editId;});
+      if(p){p.n=dn;p.r=document.getElementById('mf-drole').value;p.team=document.getElementById('mf-dteam').value||p.team;p.tz=document.getElementById('mf-dtz').value||p.tz;p.slack=document.getElementById('mf-dslack').value;p.email=document.getElementById('mf-demail').value;p.bio=document.getElementById('mf-dbio').value;p.complete=!!(dn&&document.getElementById('mf-drole').value&&document.getElementById('mf-dtz').value&&document.getElementById('mf-dbio').value);}
+      toast('✅ Profile updated for '+dn+'!');
+    } else {
+      var initials=dn.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
+      var colors=['#7c73ff','#e879f9','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#84cc16'];
+      dirPeople.push({id:'d'+Date.now(),i:initials,n:dn,r:document.getElementById('mf-drole').value||'—',team:document.getElementById('mf-dteam').value||'—',tz:document.getElementById('mf-dtz').value||'—',time:'',c:colors[dirPeople.length%colors.length],slack:document.getElementById('mf-dslack').value,email:document.getElementById('mf-demail').value,bio:document.getElementById('mf-dbio').value,complete:false});
+      toast('✅ '+dn+' added! 📨 Slack notification sent to complete profile.');
+    }
+    buildDir('');
+  }
+  closeModal();
+}
+
+function toast(msg){var el=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},3500);}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal();closeDetail();}});
+
+buildCal();buildAgenda('60');buildWhatsNext();buildDir('');buildBacklog();buildHome();
+</script>
+</body>
+</html>
+<!-- ============================================================
+     DA DUCK AGENT — embedded AI assistant
+     Appended to da_central_hub_v3.html
+============================================================ -->
+<style>
+/* AGENT BUTTON */
+.agent-fab{position:fixed;bottom:28px;right:28px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a78bfa);box-shadow:0 4px 24px rgba(108,99,255,.45);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:800;border:none;transition:all .2s;font-size:26px;}
+.agent-fab:hover{transform:scale(1.08);box-shadow:0 6px 32px rgba(108,99,255,.6);}
+.agent-fab .notif-dot{position:absolute;top:4px;right:4px;width:12px;height:12px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+
+/* AGENT PANEL */
+.agent-panel{position:fixed;bottom:96px;right:28px;width:400px;max-width:95vw;height:580px;background:#fff;border-radius:20px;box-shadow:0 8px 48px rgba(0,0,0,.18);z-index:800;display:none;flex-direction:column;overflow:hidden;border:1px solid rgba(108,99,255,.15);}
+.agent-panel.open{display:flex;}
+
+/* AGENT HEADER */
+.agent-head{background:linear-gradient(135deg,#1a1d2e,#2d2a4a);padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.agent-av{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#6c63ff,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.agent-name{font-size:13px;font-weight:700;color:#fff;}
+.agent-status{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px;display:flex;align-items:center;gap:4px;}
+.agent-status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;}
+.agent-close{margin-left:auto;cursor:pointer;color:rgba(255,255,255,.5);font-size:20px;background:none;border:none;line-height:1;padding:2px 4px;border-radius:6px;}
+.agent-close:hover{color:#fff;background:rgba(255,255,255,.1);}
+
+/* QUICK ACTIONS */
+.agent-quick{padding:10px 12px;border-bottom:1px solid #f0f0f5;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;background:#fafafe;}
+.qa-chip{padding:5px 10px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid rgba(108,99,255,.2);background:rgba(108,99,255,.06);color:#6c63ff;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.qa-chip:hover{background:rgba(108,99,255,.15);}
+
+/* CHAT AREA */
+.agent-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.msg{display:flex;gap:8px;align-items:flex-start;}
+.msg.user{flex-direction:row-reverse;}
+.msg-bubble{max-width:82%;padding:10px 13px;border-radius:14px;font-size:12px;line-height:1.6;position:relative;}
+.msg.agent .msg-bubble{background:#f4f5f7;color:#1a1d2e;border-radius:4px 14px 14px 14px;}
+.msg.user .msg-bubble{background:linear-gradient(135deg,#6c63ff,#7c73ff);color:#fff;border-radius:14px 4px 14px 14px;}
+.msg-av{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:linear-gradient(135deg,#6c63ff,#a78bfa);}
+.msg-user-av{width:28px;height:28px;border-radius:9px;background:rgba(108,99,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#6c63ff;flex-shrink:0;}
+.msg-time{font-size:9px;color:#9ca3af;margin-top:4px;padding:0 2px;}
+
+/* TYPING INDICATOR */
+.typing-indicator{display:none;align-items:center;gap:8px;}
+.typing-indicator.show{display:flex;}
+.typing-dots{display:flex;gap:4px;padding:10px 13px;background:#f4f5f7;border-radius:4px 14px 14px 14px;}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:#9ca3af;animation:bounce 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:.2s;}
+.typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+
+/* AGENT CARDS inside messages */
+.agent-card{background:#fff;border:1px solid #e2e4e9;border-radius:10px;padding:10px 12px;margin-top:6px;font-size:11px;}
+.agent-card-title{font-size:11px;font-weight:700;color:#1a1d2e;margin-bottom:6px;}
+.agent-card-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid #f4f5f7;font-size:11px;color:#6b7280;}
+.agent-card-row:last-child{border-bottom:none;}
+.agent-card-row strong{color:#1a1d2e;}
+.agent-slack-preview{background:#1a1d2e;border-radius:8px;padding:10px 12px;margin-top:6px;font-size:11px;color:#e8e9f0;line-height:1.7;font-family:monospace;}
+.agent-slack-preview .sp-header{color:#a78bfa;font-weight:700;margin-bottom:6px;font-family:inherit;}
+.agent-action-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.agent-action-btn{padding:5px 12px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid rgba(108,99,255,.3);background:rgba(108,99,255,.08);color:#6c63ff;cursor:pointer;transition:all .15s;}
+.agent-action-btn:hover{background:rgba(108,99,255,.18);}
+.agent-action-btn.primary{background:#6c63ff;color:#fff;border-color:#6c63ff;}
+.agent-action-btn.primary:hover{background:#7c73ff;}
+
+/* INPUT */
+.agent-input-area{padding:10px 12px;border-top:1px solid #f0f0f5;display:flex;gap:8px;align-items:flex-end;flex-shrink:0;background:#fff;}
+.agent-input{flex:1;padding:9px 13px;border-radius:20px;border:1px solid #e2e4e9;font-size:12px;outline:none;font-family:inherit;resize:none;max-height:90px;line-height:1.5;color:#1a1d2e;}
+.agent-input:focus{border-color:#6c63ff;box-shadow:0 0 0 3px rgba(108,99,255,.1);}
+.agent-send{width:36px;height:36px;border-radius:50%;background:#6c63ff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.agent-send:hover{background:#7c73ff;}
+.agent-send svg{width:16px;height:16px;fill:#fff;}
+
+/* PROMPT LIBRARY */
+.prompt-card{background:#fff;border:1px solid #e2e4e9;border-radius:10px;padding:10px 12px;margin-top:6px;}
+.prompt-cat{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;margin-bottom:6px;}
+.prompt-item{padding:6px 0;border-bottom:1px solid #f4f5f7;cursor:pointer;font-size:11px;color:#1a1d2e;transition:color .15s;}
+.prompt-item:last-child{border-bottom:none;}
+.prompt-item:hover{color:#6c63ff;}
+.prompt-item::before{content:"→ ";color:#9ca3af;}
+</style>
+
+<!-- FAB Button -->
+<button class="agent-fab" onclick="toggleAgent()" title="Duck Agent — tu asistente Central">
+  🦆
+  <span class="notif-dot" id="agent-notif"></span>
+</button>
+
+<!-- Agent Panel -->
+<div class="agent-panel" id="agent-panel">
+  <div class="agent-head">
+    <div class="agent-av">🦆</div>
+    <div>
+      <div class="agent-name">Duck Agent</div>
+      <div class="agent-status"><span class="agent-status-dot"></span>Online · Connected to hub data</div>
+    </div>
+    <button class="agent-close" onclick="toggleAgent()">×</button>
+  </div>
+
+  <div class="agent-quick">
+    <div class="qa-chip" onclick="quickAsk('What projects are red or blocked?')">🔴 Red items</div>
+    <div class="qa-chip" onclick="quickAsk('Draft a Slack update for #central-updates')">💬 Slack draft</div>
+    <div class="qa-chip" onclick="quickAsk('Who has no owner assigned?')">👤 Missing owners</div>
+    <div class="qa-chip" onclick="quickAsk('What deadlines are coming up?')">📅 Deadlines</div>
+    <div class="qa-chip" onclick="quickAsk('Show me the prompt library')">✨ Prompts</div>
+    <div class="qa-chip" onclick="quickAsk('Advise me on project prioritization')">🧠 Advise</div>
+  </div>
+
+  <div class="agent-messages" id="agent-messages">
+    <div class="msg agent">
+      <div class="msg-av">🦆</div>
+      <div>
+        <div class="msg-bubble">
+          Hi there 👋 I'm <strong>Duck Agent</strong> — your assistant embedded in the Central Teams Hub.<br><br>
+          I can help you:<br>
+          🔍 <strong>Search</strong> anything in the hub<br>
+          💬 <strong>Draft</strong> Slack messages with live hub data<br>
+          ⏰ <strong>Set</strong> reminders and automate alerts<br>
+          🧠 <strong>Advise</strong> on projects and priorities<br>
+          ✨ <strong>Suggest prompts</strong> for your daily work<br><br>
+          Where would you like to start?
+        </div>
+        <div class="msg-time">Now</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="typing-indicator" id="typing-indicator" style="padding:0 14px 8px;">
+    <div class="msg-av">🦆</div>
+    <div class="typing-dots">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+  </div>
+
+  <div class="agent-input-area">
+    <textarea class="agent-input" id="agent-input" placeholder="Ask anything about the hub..." rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAgent();}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px'"></textarea>
+    <button class="agent-send" onclick="sendAgent()">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DUCK AGENT ENGINE
+// ============================================================
+var agentOpen=false;
+var agentHistory=[];
+
+function toggleAgent(){
+  agentOpen=!agentOpen;
+  var panel=document.getElementById('agent-panel');
+  panel.classList.toggle('open',agentOpen);
+  document.getElementById('agent-notif').style.display='none';
+  if(agentOpen) document.getElementById('agent-input').focus();
+}
+
+function quickAsk(q){
+  document.getElementById('agent-input').value=q;
+  sendAgent();
+}
+
+function sendAgent(){
+  var input=document.getElementById('agent-input');
+  var text=input.value.trim();
+  if(!text) return;
+  input.value='';
+  input.style.height='auto';
+  appendMsg('user',text);
+  showTyping(true);
+  setTimeout(function(){
+    showTyping(false);
+    var reply=agentThink(text);
+    appendMsg('agent',reply.text,reply.card,reply.actions);
+  },900+Math.random()*600);
+}
+
+function appendMsg(role,text,card,actions){
+  var container=document.getElementById('agent-messages');
+  var msg=document.createElement('div');
+  msg.className='msg '+role;
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var avHTML=role==='agent'?'<div class="msg-av">🦆</div>':'<div class="msg-user-av">ME</div>';
+  var cardHTML=card?'<div class="agent-card">'+card+'</div>':'';
+  var actHTML='';
+  if(actions&&actions.length){
+    actHTML='<div class="agent-action-row">'+actions.map(function(a){
+      return '<button class="agent-action-btn'+(a.primary?' primary':'')+'" onclick="'+a.fn+'">'+a.label+'</button>';
+    }).join('')+'</div>';
+  }
+  msg.innerHTML=avHTML+'<div><div class="msg-bubble">'+text+cardHTML+actHTML+'</div><div class="msg-time">'+now+'</div></div>';
+  container.appendChild(msg);
+  container.scrollTop=container.scrollHeight;
+}
+
+function showTyping(show){
+  document.getElementById('typing-indicator').classList.toggle('show',show);
+  var c=document.getElementById('agent-messages');
+  c.scrollTop=c.scrollHeight;
+}
+
+// ============================================================
+// AGENT BRAIN — reads hub data and generates contextual replies
+// ============================================================
+function agentThink(q){
+  var ql=q.toLowerCase();
+
+  // ---- RED / BLOCKED items ----
+  if(ql.includes('red')||ql.includes('rojo')||ql.includes('blocked')||ql.includes('bloqueado')||ql.includes('needs action')){
+    var reds=backlog.filter(function(b){return b.rag==='r';});
+    var ambers=backlog.filter(function(b){return b.rag==='a';});
+    var rows=reds.map(function(b){return '<div class="agent-card-row"><strong>🔴 '+b.name+'</strong><span>'+b.owner||'No owner'+'</span></div>';}).join('');
+    var arows=ambers.map(function(b){return '<div class="agent-card-row"><strong>🟡 '+b.name+'</strong><span>'+(b.owner||'—')+'</span></div>';}).join('');
+    return {
+      text:'Found <strong>'+reds.length+' Red</strong> and <strong>'+ambers.length+' Amber</strong> items in the Central backlog that need attention:',
+      card:'<div class="agent-card-title">🔴 Red — immediate action needed</div>'+rows+'<div class="agent-card-title" style="margin-top:8px;">🟡 Amber — at risk</div>'+arows,
+      actions:[
+        {label:'Draft Slack alert',fn:"quickAsk('Draft a Slack alert for red items')",primary:true},
+        {label:'Go to backlog',fn:"go('backlog');toggleAgent();"}
+      ]
+    };
+  }
+
+  // ---- SLACK DRAFT ----
+  if(ql.includes('slack')||ql.includes('draft')||ql.includes('mensaje')||ql.includes('message')||ql.includes('update')||ql.includes('alert')){
+    var reds2=backlog.filter(function(b){return b.rag==='r';});
+    var ambers2=backlog.filter(function(b){return b.rag==='a';});
+    var greens=backlog.filter(function(b){return b.rag==='g';});
+    var dueItems=backlog.filter(function(b){return b.due&&new Date(b.due)<new Date('2026-06-20');});
+    var slackText='*📊 Central Team — Weekly RAG Update*\n\n*🔴 Red ('+reds2.length+') — action needed:*\n'+
+      reds2.map(function(b){return '• '+b.name+' — Owner: '+(b.owner||'TBC')+(b.decision&&b.decision!=='No'?' ⚠ Decision: '+b.decision:'');}).join('\n')+
+      '\n\n*🟡 Amber ('+ambers2.length+') — at risk:*\n'+
+      ambers2.map(function(b){return '• '+b.name+' — Owner: '+(b.owner||'TBC')+' — Due: '+b.due;}).join('\n')+
+      '\n\n*🟢 Green ('+greens.length+') — on track*\n'+
+      greens.map(function(b){return '• '+b.name;}).join('\n')+
+      '\n\n*⏰ Due this week:*\n'+
+      (dueItems.length?dueItems.map(function(b){return '• '+b.name+' — '+b.due;}).join('\n'):'None this week')+
+      '\n\n_Sent automatically by Duck Agent · DA Central Teams Hub_';
+    return {
+      text:'Here is the Slack update draft with live data from the hub. Review and confirm before sending:',
+      card:'<div class="agent-slack-preview"><div class="sp-header">#central-updates</div>'+slackText.replace(/\n/g,'<br>')+'</div>',
+      actions:[
+        {label:'✅ Send to Slack (simulated)',fn:"toast('📨 RAG update sent to #central-updates on Slack!');",primary:true},
+        {label:'Edit message',fn:"quickAsk('Edit the Slack message to add context about HiBob integration')"},
+        {label:'Send to #central-alerts',fn:"toast('📨 Alert sent to #central-alerts!')"}
+      ]
+    };
+  }
+
+  // ---- DEADLINES ----
+  if(ql.includes('deadline')||ql.includes('due')||ql.includes('upcoming')||ql.includes('next')||ql.includes('soon')){
+    var sorted=backlog.filter(function(b){return b.due;}).sort(function(a,b){return new Date(a.due)-new Date(b.due);});
+    var rows2=sorted.map(function(b){
+      var isOverdue=new Date(b.due)<new Date('2026-06-05');
+      var ragDot=b.rag==='r'?'🔴':b.rag==='a'?'🟡':'🟢';
+      return '<div class="agent-card-row">'+(isOverdue?'<strong style="color:#A32D2D;">⚠ '+b.due+'</strong>':'<strong>'+b.due+'</strong>')+' '+ragDot+' '+b.name+'<span>'+(b.owner||'—')+'</span></div>';
+    }).join('');
+    return {
+      text:'Here are all <strong>'+sorted.length+' backlog items</strong> with deadlines, sorted by date. Items in red are past due or critical:',
+      card:'<div class="agent-card-title">📅 Deadlines — sorted by date</div>'+rows2,
+      actions:[
+        {label:'Set reminders for all',fn:"toast('⏰ Reminders set for all deadlines in Automations!')",primary:true},
+        {label:'Draft deadline digest',fn:"quickAsk('Draft a Slack digest of all upcoming deadlines this month')"}
+      ]
+    };
+  }
+
+  // ---- MISSING OWNERS ----
+  if(ql.includes('owner')||ql.includes('responsible')||ql.includes('missing')||ql.includes('unassigned')||ql.includes('no owner')||ql.includes('tbc')){
+    var noPrioOwner=priorities.filter(function(p){return !p.owner;});
+    var noBacklogOwner=backlog.filter(function(b){return !b.owner||b.owner==='TBC';});
+    var rows3='<div class="agent-card-title">📋 Priorities without owner ('+noPrioOwner.length+')</div>'+
+      noPrioOwner.map(function(p){return '<div class="agent-card-row"><strong>'+p.team+':</strong> '+p.title.slice(0,45)+'...<span style="color:#A32D2D;">No owner</span></div>';}).join('')+
+      '<div class="agent-card-title" style="margin-top:8px;">⚙️ Backlog items without owner ('+noBacklogOwner.length+')</div>'+
+      noBacklogOwner.map(function(b){return '<div class="agent-card-row"><strong>'+b.name+'</strong><span style="color:#A32D2D;">'+(b.owner||'No owner')+'</span></div>';}).join('');
+    return {
+      text:'Found <strong>'+(noPrioOwner.length+noBacklogOwner.length)+' items</strong> without a confirmed owner. This is a governance risk — unowned items tend to slip.',
+      card:rows3,
+      actions:[
+        {label:'Draft ownership request',fn:"quickAsk('Draft a Slack message asking team leads to confirm ownership of unassigned items')",primary:true},
+        {label:'Go to priorities',fn:"go('priorities');toggleAgent();"},
+        {label:'Go to backlog',fn:"go('backlog');toggleAgent();"}
+      ]
+    };
+  }
+
+  // ---- PROMPT LIBRARY ----
+  if(ql.includes('prompt')||ql.includes('library')||ql.includes('biblioteca')||ql.includes('suger')){
+    return {
+      text:'Here is a prompt library curated for the Central Team. Click any prompt to load it:',
+      card:'<div class="prompt-card">'+
+        '<div class="prompt-cat">📊 Project management</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'Summarise the red and amber items in our Central backlog and draft a clear escalation message for leadership\')">Summarise red/amber items for leadership</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'Given our team priorities from the Central Retreat, identify the top 3 intersections between teams and suggest one cross-functional project for each\')">Find cross-team intersections</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'Review these backlog items and apply RACE (Responsible, Accountable, Consulted, Informed) to clarify ownership for each one\')">Apply RACE to backlog items</div>'+
+        '</div>'+
+        '<div class="prompt-card" style="margin-top:6px;">'+
+        '<div class="prompt-cat">💬 Slack & communications</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'Draft a warm but direct Slack message to the Central Team reminding them to update their RAG status before the monthly routine on [date]\')">Monthly routine reminder</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'Write a Slack announcement for a new Central project. Team: [team]. Priority: [priority]. Owner: [name]. Deadline: [date]\')">New project announcement</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'Summarise this week\'s Central updates into a 5-bullet digest for the #central-updates channel\')">Weekly digest draft</div>'+
+        '</div>'+
+        '<div class="prompt-card" style="margin-top:6px;">'+
+        '<div class="prompt-cat">🧠 Strategic advice</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'We have limited capacity and 8 competing priorities. Using impact vs effort scoring, help me decide which 3 to focus on this quarter\')">Prioritisation with impact/effort</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'One of our Central projects is blocked due to a governance decision. Draft a concise brief for leadership to make a decision within 48 hours\')">Leadership decision brief</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'Review our team priorities and flag any duplications or overlaps that could be combined into a single cross-functional workstream\')">Find duplications & overlaps</div>'+
+        '</div>'+
+        '<div class="prompt-card" style="margin-top:6px;">'+
+        '<div class="prompt-cat">🤖 AI & automation</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'Design an AI workflow to automatically summarise weekly Slack priority updates from each team into a single RAG digest posted every Monday at 9am\')">Design AI Slack workflow</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'What are the best AI use cases for a central operations team working across Staffing, Finance, People Ops, and Knowledge Management?\')">AI use cases for Central</div>'+
+        '<div class="prompt-item" onclick="loadPrompt(\'Help me write a prompt that I can use weekly to check the status of our Central backlog and flag anything that needs attention\')">Weekly backlog check prompt</div>'+
+        '</div>',
+      actions:[
+        {label:'Load random prompt',fn:"loadPrompt(getRandomPrompt())",primary:true}
+      ]
+    };
+  }
+
+  // ---- PROJECT ADVICE ----
+  if(ql.includes('advis')||ql.includes('prioriti')||ql.includes('strategy')||ql.includes('recommend')||ql.includes('assess')||ql.includes('review')){
+    var p1count=backlog.filter(function(b){return b.rag==='r'||b.rag==='a';}).length;
+    var totalProjects=backlog.length;
+    return {
+      text:'Based on the current hub data, here is my strategic read on where the Central Team stands:',
+      card:'<div class="agent-card-title">🧠 Strategic assessment — Central backlog</div>'+
+        '<div class="agent-card-row"><strong>Total actions tracked</strong><span>'+totalProjects+'</span></div>'+
+        '<div class="agent-card-row"><strong>At risk or blocked</strong><span style="color:#A32D2D;">'+p1count+' of '+totalProjects+'</span></div>'+
+        '<div class="agent-card-row"><strong>Items without owner</strong><span style="color:#854F0B;">'+backlog.filter(function(b){return !b.owner||b.owner==='TBC';}).length+'</span></div>'+
+        '<div class="agent-card-row"><strong>Decisions pending</strong><span style="color:#A32D2D;">'+backlog.filter(function(b){return b.decision&&b.decision!=="No";}).length+'</span></div>'+
+        '<div style="margin-top:10px;font-size:11px;color:#6b7280;line-height:1.7;">'+
+        '<strong style="color:#1a1d2e;">Recommendations:</strong><br>'+
+        '1. <strong>Resolve governance first</strong> — the RACE/GOVERNANCE item is blocking everything else. Needs a leadership decision this week.<br>'+
+        '2. <strong>Assign all TBC owners</strong> — unowned items create risk. Use RACE to clarify who is Responsible vs Accountable.<br>'+
+        '3. <strong>Run a quick wins audit</strong> — of 8 backlog actions, identify which 2-3 can be closed in the next 30 days to build momentum.<br>'+
+        '4. <strong>Protect capacity</strong> — the retreat showed "Capacity" was the most repeated challenge. Consider a weekly capacity check-in before adding new work.'+
+        '</div>',
+      actions:[
+        {label:'Draft leadership brief',fn:"quickAsk('Draft a concise leadership brief on the 2 blocked items that need a decision')",primary:true},
+        {label:'Run prioritisation',fn:"quickAsk('Score all backlog items by impact and effort and recommend the top 3 to focus on')"},
+        {label:'View backlog',fn:"go('backlog');toggleAgent();"}
+      ]
+    };
+  }
+
+  // ---- REMINDER / AUTOMATION ----
+  if(ql.includes('reminder')||ql.includes('automation')||ql.includes('alert')||ql.includes('notify')||ql.includes('trigger')){
+    return {
+      text:'The hub has <strong>'+automations.filter(function(a){return a.on;}).length+' active automations</strong> and '+automations.filter(function(a){return !a.on;}).length+' paused. Here\'s what I can set up for you:',
+      card:'<div class="agent-card-title">⚙️ Available automations</div>'+
+        automations.map(function(a){return '<div class="agent-card-row">'+(a.on?'<strong style="color:#3B6D11;">✅ '+a.name+'</strong>':'<strong style="color:#9ca3af;">⏸ '+a.name+'</strong>')+'<span style="font-size:9px;">'+a.channel+'</span></div>';}).join(''),
+      actions:[
+        {label:'Enable all',fn:"automations.forEach(function(a){a.on=true;});toast('✅ All automations enabled!');if(document.getElementById('page-automations').classList.contains('active'))buildAutomations();",primary:true},
+        {label:'Manage automations',fn:"go('automations');toggleAgent();"},
+        {label:'Add custom reminder',fn:"quickAsk('Create a reminder for the GOVERNANCE decision — notify leadership every Monday until resolved')"}
+      ]
+    };
+  }
+
+  // ---- DIRECTORY / PEOPLE ----
+  if(ql.includes('director')||ql.includes('people')||ql.includes('team')||ql.includes('who')||ql.includes('profile')||ql.includes('contact')||ql.includes('member')){
+    var incomplete=dirPeople.filter(function(p){return !p.complete;});
+    return {
+      text:'The directory has <strong>'+dirPeople.length+' people</strong> across <strong>'+[...new Set(dirPeople.map(function(p){return p.team;}))].length+' teams</strong>. <strong>'+incomplete.length+' profiles are incomplete</strong>.',
+      card:'<div class="agent-card-title">👤 Incomplete profiles ('+incomplete.length+')</div>'+
+        incomplete.map(function(p){return '<div class="agent-card-row"><strong>'+p.n+'</strong><span>'+p.team+'</span></div>';}).join(''),
+      actions:[
+        {label:'Notify incomplete members',fn:"toast('📨 Slack DM sent to incomplete members to complete their profile!');",primary:true},
+        {label:'View directory',fn:"go('directory');toggleAgent();"}
+      ]
+    };
+  }
+
+  // ---- OOO / CALENDAR ----
+  if(ql.includes('ooo')||ql.includes('away')||ql.includes('ausente')||ql.includes('vacation')||ql.includes('holiday')||ql.includes('calendar')||ql.includes('hibob')){
+    return {
+      text:'The OOO calendar is ready. HiBob integration is <strong>pending IT setup</strong>. Currently loaded:',
+      card:'<div class="agent-card-title">✈️ Known OOO — June 2026</div>'+
+        '<div class="agent-card-row"><strong>Anna Needs</strong><span>15–19 Jun · Canberra</span></div>'+
+        '<div class="agent-card-row"><strong>Abigail Smock</strong><span>22 Jun · Los Angeles</span></div>'+
+        '<div class="agent-card-title" style="margin-top:8px;">⚙️ HiBob integration status</div>'+
+        '<div class="agent-card-row"><strong>API key</strong><span style="color:#854F0B;">Not configured</span></div>'+
+        '<div class="agent-card-row"><strong>Auto-sync</strong><span style="color:#854F0B;">Pending IT</span></div>'+
+        '<div class="agent-card-row"><strong>What IT needs</strong><span>HiBob service user + API key</span></div>',
+      actions:[
+        {label:'Simulate HiBob import',fn:"simulateHiBob();toast('✅ HiBob data loaded!');",primary:true},
+        {label:'View OOO calendar',fn:"go('ooo');toggleAgent();"},
+        {label:'Draft IT request',fn:"quickAsk('Draft a short IT request to enable the HiBob OOO API integration for the Central Teams Hub')"}
+      ]
+    };
+  }
+
+  // ---- SCORING / PRIORITISATION ----
+  if(ql.includes('scor')||ql.includes('impact')||ql.includes('effort')||ql.includes('esfuerzo')||ql.includes('rank')||ql.includes('focus')||ql.includes('top 3')){
+    var scored=backlog.map(function(b){
+      var impactScore={'g':1,'a':2,'r':3}[b.rag]||1;
+      var urgency=b.due&&new Date(b.due)<new Date('2026-07-01')?3:2;
+      var ownerPenalty=(!b.owner||b.owner==='TBC')?1:0;
+      var score=(impactScore*3)+(urgency*2)-ownerPenalty;
+      return {name:b.name,score:score,rag:b.rag,owner:b.owner||'TBC',due:b.due};
+    }).sort(function(a,b){return b.score-a.score;});
+    return {
+      text:'Scored all backlog items by urgency (RAG + deadline) and ownership risk. <strong>Top 3 to focus on first:</strong>',
+      card:'<div class="agent-card-title">🎯 Priority score ranking</div>'+
+        scored.slice(0,5).map(function(b,i){
+          var medal=['🥇','🥈','🥉','4️⃣','5️⃣'][i];
+          var ragDot=b.rag==='r'?'🔴':b.rag==='a'?'🟡':'🟢';
+          return '<div class="agent-card-row">'+medal+' <strong>'+b.name+'</strong> <span>'+ragDot+' Score: '+b.score+'</span></div>';
+        }).join(''),
+      actions:[
+        {label:'Create action plan',fn:"quickAsk('Create a 30-day action plan for the top 3 backlog items')",primary:true},
+        {label:'View full backlog',fn:"go('backlog');toggleAgent();"}
+      ]
+    };
+  }
+
+  // ---- IT REQUEST draft ----
+  if(ql.includes('it request')||ql.includes('solicitud it')||ql.includes('hibob api')||ql.includes('slack webhook')){
+    return {
+      text:'Here is a draft IT request you can send directly:',
+      card:'<div class="agent-slack-preview"><div class="sp-header">📧 IT Request — Central Teams Hub integrations</div>Hi team,<br><br>We\'re rolling out the <strong>DA Central Teams Hub</strong> — a browser-based operating tool for the Central Team. We need two integrations configured:<br><br><strong>1. HiBob OOO sync</strong><br>• Create a HiBob API service user with time-off read access<br>• Share the API key with [contact name]<br>• Estimated effort: ~30 min<br><br><strong>2. Slack webhook (Incoming Webhook)</strong><br>• Create a Slack App for the DA workspace<br>• Add an Incoming Webhook for channels: #central-updates, #central-alerts<br>• Share the webhook URL with [contact name]<br>• Estimated effort: ~45 min<br><br>Both are standard integrations with no additional licensing cost. Priority: this week if possible.<br><br>Thank you 🙏</div>',
+      actions:[
+        {label:'Copy to clipboard',fn:"toast('📋 IT request copied to clipboard!')",primary:true},
+        {label:'Send as Slack DM to IT',fn:"toast('💬 Slack DM sent to IT team!')"}
+      ]
+    };
+  }
+
+  // ---- 30-DAY PLAN ----
+  if(ql.includes('30 day')||ql.includes('30-day')||ql.includes('plan')||ql.includes('action plan')||ql.includes('plan de accion')||ql.includes('roadmap')){
+    return {
+      text:'Here is a 30-day action plan based on the current hub data and the retreat outputs:',
+      card:'<div class="agent-card-title">📅 30-day Central Team action plan</div>'+
+        '<div class="agent-card-row"><strong>Week 1</strong><span>Resolve GOVERNANCE/RACE — leadership decision</span></div>'+
+        '<div class="agent-card-row"><strong>Week 1</strong><span>Assign all TBC owners in backlog</span></div>'+
+        '<div class="agent-card-row"><strong>Week 1</strong><span>IT: Slack webhook + HiBob API setup</span></div>'+
+        '<div class="agent-card-row"><strong>Week 2</strong><span>Pilot monthly Central Routine (60-min agenda)</span></div>'+
+        '<div class="agent-card-row"><strong>Week 2</strong><span>All team members complete directory profiles</span></div>'+
+        '<div class="agent-card-row"><strong>Week 3</strong><span>First AI-enabled Slack RAG update (automated)</span></div>'+
+        '<div class="agent-card-row"><strong>Week 3</strong><span>Kelly S: resolve HRIS automation IT access</span></div>'+
+        '<div class="agent-card-row"><strong>Week 4</strong><span>Review backlog with leadership — first RAG review</span></div>'+
+        '<div class="agent-card-row"><strong>Week 4</strong><span>Close first 2 backlog items → move to Done</span></div>',
+      actions:[
+        {label:'Share as Slack post',fn:"toast('📨 30-day plan shared to #central-updates!')",primary:true},
+        {label:'Add to agenda',fn:"go('agenda');toggleAgent();"}
+      ]
+    };
+  }
+
+  // ---- GENERIC / FALLBACK with Claude API call ----
+  return agentClaudeCall(q);
+}
+
+function agentClaudeCall(q){
+  // Build context from hub data
+  var context='You are Duck Agent, the embedded AI assistant for the DA Central Teams Hub. You have access to the following live hub data:\n\n';
+  context+='TEAM PRIORITIES (Brown Paper — '+priorities.length+' items):\n';
+  priorities.forEach(function(p){context+=p.team+': '+p.title+' | Status: '+p.status+' | Owner: '+(p.owner||'TBC')+' | Due: '+(p.due||'—')+'\n';});
+  context+='\nCENTRAL BACKLOG ('+backlog.length+' items):\n';
+  backlog.forEach(function(b){context+=b.name+' | RAG: '+b.rag.toUpperCase()+' | Status: '+b.status+' | Owner: '+(b.owner||'TBC')+' | Due: '+(b.due||'—')+(b.decision&&b.decision!=='No'?' | DECISION NEEDED: '+b.decision:'')+'\n';});
+  context+='\nTEAM DIRECTORY ('+dirPeople.length+' people, '+dirPeople.filter(function(p){return !p.complete;}).length+' incomplete profiles)\n';
+  context+='\nACTIVE AUTOMATIONS: '+automations.filter(function(a){return a.on;}).length+' of '+automations.length+'\n\n';
+  context+='You help with: searching hub data, drafting Slack messages, setting reminders, advising on projects and priorities, and suggesting prompts. Always respond in English. Be concise, practical, and direct. Max 3 paragraphs.';
+
+  // Show loading state (already shown by typing indicator)
+  // Make real API call
+  var messagesContainer=document.getElementById('agent-messages');
+  
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1000,
+      system:context,
+      messages:[{role:'user',content:q}]
+    })
+  }).then(function(r){return r.json();}).then(function(data){
+    var text=data.content&&data.content[0]?data.content[0].text:'Sorry, I could not process that response. Try one of the quick actions.';
+    appendMsg('agent',text.replace(/\n/g,'<br>'),null,[
+      {label:'Ask a follow-up',fn:"document.getElementById('agent-input').focus()"},
+      {label:'Show prompt library',fn:"quickAsk('Show me the prompt library')",primary:true}
+    ]);
+  }).catch(function(){
+    appendMsg('agent','Running in offline mode. Based on current hub data: <strong>'+backlog.filter(function(b){return b.rag==="r";}).length+' items are Red</strong> and <strong>'+backlog.filter(function(b){return !b.owner||b.owner==="TBC";}).length+' have no owner assigned</strong>. Would you like a Slack draft or a detailed analysis?',null,[
+      {label:'Red items',fn:"quickAsk('What projects are red or blocked?')"},
+      {label:'Slack draft',fn:"quickAsk('Draft a Slack update for #central-updates')",primary:true}
+    ]);
+  });
+
+  return null; // async — don't return from agentThink
+}
+
+// Override appendMsg to handle async
+var _origAppend=appendMsg;
+appendMsg=function(role,text,card,actions){
+  if(text===null) return; // skip null (async in progress)
+  showTyping(false);
+  _origAppend(role,text,card,actions);
+};
+
+function loadPrompt(text){
+  var input=document.getElementById('agent-input');
+  input.value=text;
+  input.style.height='auto';
+  input.style.height=Math.min(input.scrollHeight,90)+'px';
+  input.focus();
+}
+
+function getRandomPrompt(){
+  var prompts=[
+    'Summarise the red and amber items in our Central backlog and draft a clear escalation message for leadership',
+    'Given our team priorities from the Central Retreat, identify the top 3 intersections between teams and suggest one cross-functional project for each',
+    'Review these backlog items and apply RACE to clarify ownership for each one',
+    'Design an AI workflow to automatically summarise weekly Slack priority updates into a single RAG digest',
+    'Score all backlog items by impact and effort and recommend the top 3 to focus on'
+  ];
+  return prompts[Math.floor(Math.random()*prompts.length)];
+}
+
+// Show notification dot after 3 seconds
+setTimeout(function(){
+  if(!agentOpen){
+    document.getElementById('agent-notif').style.display='block';
+    // Pulse the FAB
+    var fab=document.querySelector('.agent-fab');
+    fab.style.animation='none';
+  }
+},3000);
+</script>
